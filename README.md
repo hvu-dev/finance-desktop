@@ -1,2 +1,1 @@
-# finance-desktop
-Personal financial manager
+# Personal financial manager
