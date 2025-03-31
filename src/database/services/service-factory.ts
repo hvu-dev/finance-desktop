@@ -1,5 +1,4 @@
 import { DatabaseRepository } from '../repository/database';
-import { ExpenseRepository } from '../repository/expense-repository';
 import { ExpenseService } from './expense-service';
 
 class ServiceFactory {
@@ -10,9 +9,7 @@ class ServiceFactory {
     }
 
     public createExpenseService() {
-        return new ExpenseService(
-            new ExpenseRepository(this.databaseRepository)
-        );
+        return new ExpenseService(this.databaseRepository);
     }
 }
 

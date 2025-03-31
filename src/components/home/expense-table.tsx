@@ -62,22 +62,20 @@ const ExpenseTable: React.FC = ({ data }: ExpenseTableProps) => {
             },
         },
         {
-            title: 'Categories',
-            key: 'categories',
-            dataIndex: 'categories',
-            render: (_, { categories }) => (
-                <>
-                    {categories.map(({ id, value }) => {
-                        const color: string =
-                            COLOR_TAGS_MAP[value.toLowerCase()];
-                        return (
-                            <Tag color={color} key={id}>
-                                {value.toUpperCase()}
-                            </Tag>
-                        );
-                    })}
-                </>
-            ),
+            title: 'Category',
+            key: 'category',
+            dataIndex: 'category',
+            render: (_, { category }) => {
+                return (
+                    <>
+                        <Tag
+                            color={COLOR_TAGS_MAP[category.value.toLowerCase()]}
+                            key={category.id}>
+                            {category.name.toUpperCase()}
+                        </Tag>
+                    </>
+                );
+            },
         },
         {
             title: 'Action',

@@ -1,6 +1,7 @@
 export type Category = {
     id: number;
     value: string;
+    name: string;
 };
 
 export type Expense = {
@@ -8,5 +9,5 @@ export type Expense = {
     title: string;
     amount: number;
     dateSpent: Date;
-    categories: Category[];
+    category: Category;
 };

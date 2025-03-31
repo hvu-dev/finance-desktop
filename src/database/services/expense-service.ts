@@ -1,5 +1,5 @@
 import { Expense } from '../dtos/expense';
-import { ExpenseRepository } from '../repository/expense-repository';
+import { DatabaseRepository } from '../repository/database';
 
 const mockData: Expense[] = [
     {
@@ -7,27 +7,51 @@ const mockData: Expense[] = [
         title: 'Buy milk',
         amount: 30000,
         dateSpent: new Date(),
-        categories: [{ id: 1, value: 'Food' }],
+        category: { id: 1, value: 'Food', name: '' },
     },
 ];
 
+type ExpenseRow = {
+    rowid: number;
+    title: string;
+    amount: number;
+    dateSpent: string;
+    note: string;
+    categoryId: number;
+    categoryValue: string;
+    categoryName: string;
+};
+
 export class ExpenseService {
-    constructor(private expenseRepo: ExpenseRepository) {}
+    constructor(private databaseRepository: DatabaseRepository) {}
 
     getAll(filterString?: string): Expense[] {
-        let data = [];
-        for (let i = 1; i <= 10; i++) {
+        const rows: ExpenseRow[] = this.databaseRepository
+            .prepare(
+                `
+            SELECT e.rowid, e.title, e.amount, e.dateSpent, e.note, e.categoryId, c.value as categoryValue, c.name as categoryName
+            FROM expenses as e 
+            INNER JOIN categories as c 
+            ON c.rowid = e.categoryId;
+        `
+            )
+            .all();
+
+        let data: Expense[] = [];
+        for (const row of rows) {
             data.push({
-                id: i,
-                title: 'Milk',
-                amount: 5000 * i,
+                id: row.rowid,
+                title: row.title,
+                amount: row.amount,
                 dateSpent: new Date(),
-                categories: [
-                    { id: 1, value: 'Food' },
-                    { id: 2, value: 'Books' },
-                ],
+                category: {
+                    id: row.categoryId,
+                    name: row.categoryName,
+                    value: row.categoryValue,
+                },
             });
         }
+
         return data;
     }
 }
