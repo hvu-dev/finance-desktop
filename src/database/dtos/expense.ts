@@ -1,13 +1,21 @@
-export type Category = {
+import { Category } from './category';
+
+export type ExpenseDBRow = {
     id: number;
-    value: string;
-    name: string;
+    title: string;
+    amount: number;
+    spentDate: string;
+    note: string;
+    categoryId: number;
+    categoryValue: string;
+    categoryName: string;
 };
 
 export type Expense = {
     id: number;
     title: string;
     amount: number;
-    dateSpent: Date;
+    spentDate: Date;
+    note: string;
     category: Category;
 };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Button,
     DatePicker,
@@ -14,12 +14,16 @@ import {
     Tag,
 } from 'antd';
 import { Expense } from 'src/database/dtos/expense';
+import dayjs from 'dayjs';
+import { Category } from 'src/database/dtos/category';
 
 const COLOR_TAGS_MAP = {
     food: 'volcano',
     accomodation: 'geekblue',
     books: 'green',
 };
+
+const DATE_FORMAT = 'DD/MM/YYYY';
 
 export type ExpenseTableProps = {
     data: Expense[];
@@ -32,7 +36,16 @@ const ExpenseTable: React.FC = ({ data }: ExpenseTableProps) => {
         useState<boolean>(false);
     const [selectedExpense, setSelectedExpense] = useState<Expense>(null);
 
+    const [categories, setCategories] = useState<Category[]>([]);
+
     const [form] = Form.useForm();
+
+    useEffect(() => {
+        // @ts-ignore
+        window.categoryService.getAllCategories().then((response) => {
+            setCategories(response);
+        });
+    }, []);
 
     const columns: TableProps<Expense>['columns'] = [
         {
@@ -54,11 +67,11 @@ const ExpenseTable: React.FC = ({ data }: ExpenseTableProps) => {
             key: 'amount',
         },
         {
-            title: 'Date Spent',
-            dataIndex: 'dateSpent',
-            key: 'dateSpent',
-            render: (value) => {
-                return value.toLocaleDateString();
+            title: 'Spent Date',
+            dataIndex: 'spentDate',
+            key: 'spentDate',
+            render: (value: Date) => {
+                return dayjs(value).format(DATE_FORMAT);
             },
         },
         {
@@ -181,7 +194,11 @@ const ExpenseTable: React.FC = ({ data }: ExpenseTableProps) => {
                                     message: 'Category is required',
                                 },
                             ]}>
-                            <Select />
+                            <Select
+                                defaultValue={selectedExpense.category.value}
+                                options={categories}
+                                key={'id'}
+                            />
                         </Form.Item>
                         <Form.Item
                             label='Date spent'
@@ -189,10 +206,15 @@ const ExpenseTable: React.FC = ({ data }: ExpenseTableProps) => {
                             rules={[
                                 { required: true, message: 'Please input!' },
                             ]}>
-                            <DatePicker />
+                            <DatePicker
+                                defaultValue={dayjs(selectedExpense.spentDate)}
+                                format={DATE_FORMAT}
+                            />
                         </Form.Item>
                         <Form.Item label='Note' name='TextArea'>
-                            <Input.TextArea />
+                            <Input.TextArea
+                                defaultValue={selectedExpense.note}
+                            />
                         </Form.Item>
                     </Form>
                 </Modal>

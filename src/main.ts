@@ -39,8 +39,13 @@ const createWindow = () => {
 const initializeHandlers = () => {
     const factory = new ServiceFactory();
     const expenseService = factory.createExpenseService();
+    const categoryService = factory.createCategoryService();
     ipcMain.handle('getAllExpenses', () => {
         return expenseService.getAll();
+    });
+
+    ipcMain.handle('getAllCategories', () => {
+        return categoryService.getAll();
     });
 };
 
