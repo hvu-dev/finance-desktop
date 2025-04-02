@@ -5,7 +5,7 @@ import { DatabaseRepository } from '../repository/database';
 export class ExpenseService {
     constructor(
         private databaseRepository: DatabaseRepository,
-        private adapter: Adapter<ExpenseDBRow[], Expense[]>
+        private adapter: Adapter<ExpenseDBRow, Expense>
     ) {}
 
     public getAll(filterString?: string): Expense[] {
@@ -18,11 +18,20 @@ export class ExpenseService {
             )
             .all();
 
-        return this.adapter.adapt(data);
+        return this.adapter.adaptMultiple(data);
     }
 
     public getById(id: number): Expense {
-        return;
+        const expense: ExpenseDBRow = this.databaseRepository
+            .prepare(
+                `SELECT e.id, e.title, e.amount, e.spentDate, e.note, e.categoryId, c.value as categoryValue, c.name as categoryName
+                FROM expenses as e 
+                INNER JOIN categories as c 
+                ON c.rowid = e.categoryId
+                WHERE e.id = ?;`
+            )
+            .get(id);
+        return this.adapter.adapt(expense);
     }
 
     public update(data: CreateExpenseDto): Expense {
@@ -33,10 +42,11 @@ export class ExpenseService {
                 amount = @amount,
                 spentDate = @spentDate,
                 note = @note,
-                categoryId = @categoryId`
+                categoryId = @categoryId
+                WHERE id = @id;
+                `
             )
             .run(data);
-
         return this.getById(data.id);
     }
 }

@@ -1,7 +1,22 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
-import { Button, Card, Col, Flex, Row } from 'antd';
+import {
+    Button,
+    Card,
+    Col,
+    DatePicker,
+    Flex,
+    Form,
+    Input,
+    InputNumber,
+    Modal,
+    Row,
+    Select,
+} from 'antd';
 import ExpenseTable from './expense-table';
-import { Expense } from '../../database/dtos/expense';
+import { CreateExpenseDto, Expense } from '../../database/dtos/expense';
+import { DATE_FORMAT } from '../const';
+import dayjs from 'dayjs';
+import { Category } from 'src/database/dtos/category';
 
 const cardStyle: CSSProperties = {
     textAlign: 'center',
@@ -9,13 +24,66 @@ const cardStyle: CSSProperties = {
 
 const ExpenseComponent: React.FC = () => {
     const [expenses, setExpenses] = useState<Expense[]>([]);
+    const [isUpdateModalVisible, setIsUpdateModalVisible] =
+        useState<boolean>(false);
+    const [updateFormDisabled, setUpdateFormDisabled] =
+        useState<boolean>(false);
+    const [selectedExpense, setSelectedExpense] = useState<Expense>(null);
+    const [categories, setCategories] = useState<Category[]>([]);
+
+    const [form] = Form.useForm();
 
     useEffect(() => {
         // @ts-ignore
         window.expenseService.getAllExpenses().then((response) => {
             setExpenses(response);
         });
+        // @ts-ignore
+        window.categoryService.getAllCategories().then((response) => {
+            setCategories(response);
+        });
     }, []);
+
+    const updateExpense = (record: Expense) => {
+        const updateExpenseDto: CreateExpenseDto = {
+            id: record.id,
+            title: form.getFieldValue('title'),
+            amount: form.getFieldValue('amount'),
+            spentDate: form.getFieldValue('spentDate').format(DATE_FORMAT),
+            note: form.getFieldValue('note'),
+            categoryId: form.getFieldValue('category').id,
+        };
+        // @ts-ignore
+        window.expenseService
+            .update(updateExpenseDto)
+            .then((updatedExpense: Expense) => {
+                setExpenses(
+                    expenses.map((e) =>
+                        e.id !== updatedExpense.id ? e : updatedExpense
+                    )
+                );
+            });
+
+        setIsUpdateModalVisible(false);
+        setSelectedExpense(null);
+    };
+
+    const handleUpdateButtonClick = (record: Expense) => {
+        toggleExpenseModalVisibility(record, true, false);
+    };
+
+    const handleDeleteButtonClick = (record: Expense) => {};
+
+    const toggleExpenseModalVisibility = (
+        record: Expense,
+        isVisiable: boolean,
+        disabledForm: boolean = false
+    ) => {
+        setUpdateFormDisabled(disabledForm);
+        setIsUpdateModalVisible(isVisiable);
+        setSelectedExpense(record);
+        form.setFieldsValue({ ...record, spentDate: dayjs(record.spentDate) });
+    };
 
     return (
         <div>
@@ -48,9 +116,86 @@ const ExpenseComponent: React.FC = () => {
             </Row>
             <Row>
                 <Col span={24}>
-                    <ExpenseTable data={expenses}></ExpenseTable>
+                    <ExpenseTable
+                        data={expenses}
+                        onUpdateButtonClick={handleUpdateButtonClick}
+                        onDeleteButtonClick={handleDeleteButtonClick}
+                        onTitleClick={(record: Expense) =>
+                            toggleExpenseModalVisibility(record, true, true)
+                        }></ExpenseTable>
                 </Col>
             </Row>
+            {isUpdateModalVisible && (
+                <Modal
+                    title='Expense'
+                    open={isUpdateModalVisible}
+                    onOk={() => updateExpense(selectedExpense)}
+                    onCancel={() => setIsUpdateModalVisible(false)}
+                    okButtonProps={{
+                        style: { display: updateFormDisabled && 'none' },
+                    }}
+                    okText='Update'>
+                    <Form
+                        form={form}
+                        labelCol={{ span: 6 }}
+                        wrapperCol={{ span: 18 }}
+                        layout='horizontal'
+                        variant={'filled'}
+                        style={{ maxWidth: 600 }}
+                        initialValues={{
+                            variant: 'filled',
+                        }}
+                        disabled={updateFormDisabled}>
+                        <Form.Item
+                            label='Title'
+                            name='title'
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Title is required',
+                                },
+                            ]}>
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label='Amount'
+                            name='amount'
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Amount is required',
+                                },
+                            ]}>
+                            <InputNumber style={{ width: '100%' }} />
+                        </Form.Item>
+                        <Form.Item
+                            label='Category'
+                            name='category'
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Category is required',
+                                },
+                            ]}>
+                            <Select options={categories} key={'id'} />
+                        </Form.Item>
+                        <Form.Item
+                            label='Date spent'
+                            name='spentDate'
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Date spent is required',
+                                },
+                            ]}>
+                            <DatePicker format={DATE_FORMAT} />
+                        </Form.Item>
+                        <Form.Item label='Note' name='note'>
+                            <Input.TextArea />
+                        </Form.Item>
+                    </Form>
+                </Modal>
+            )}
         </div>
     );
 };

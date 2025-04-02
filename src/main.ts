@@ -44,6 +44,10 @@ const initializeHandlers = () => {
         return expenseService.getAll();
     });
 
+    ipcMain.handle('updateExpense', (event, data) => {
+        return expenseService.update(data);
+    });
+
     ipcMain.handle('getAllCategories', () => {
         return categoryService.getAll();
     });
