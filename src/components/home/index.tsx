@@ -14,7 +14,6 @@ const ExpenseComponent: React.FC = () => {
         // @ts-ignore
         window.expenseService.getAllExpenses().then((response) => {
             setExpenses(response);
-            console.log(response);
         });
     }, []);
 

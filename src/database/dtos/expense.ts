@@ -19,3 +19,12 @@ export type Expense = {
     note: string;
     category: Category;
 };
+
+export type CreateExpenseDto = {
+    id: number;
+    title: string;
+    amount: number;
+    spentDate: string;
+    note: string;
+    categoryId: number;
+};

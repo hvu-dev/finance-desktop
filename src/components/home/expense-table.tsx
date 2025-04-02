@@ -16,14 +16,13 @@ import {
 import { Expense } from 'src/database/dtos/expense';
 import dayjs from 'dayjs';
 import { Category } from 'src/database/dtos/category';
+import { DATE_FORMAT } from '../const';
 
 const COLOR_TAGS_MAP = {
     food: 'volcano',
     accomodation: 'geekblue',
     books: 'green',
 };
-
-const DATE_FORMAT = 'DD/MM/YYYY';
 
 export type ExpenseTableProps = {
     data: Expense[];
@@ -126,6 +125,7 @@ const ExpenseTable: React.FC = ({ data }: ExpenseTableProps) => {
         setUpdateFormDisabled(disabledForm);
         setIsUpdateModalVisible(isVisiable);
         setSelectedExpense(record);
+        form.setFieldsValue({ ...record, spentDate: dayjs(record.spentDate) });
     };
 
     const handleDeleteExpense = (record: Expense) => {
@@ -133,7 +133,9 @@ const ExpenseTable: React.FC = ({ data }: ExpenseTableProps) => {
     };
 
     const handleUpdateExpense = (record: Expense) => {
-        console.log('Updating', record);
+        const data = form.getFieldsValue();
+        data.spentDate = data.spentDate.format(DATE_FORMAT);
+
         setIsUpdateModalVisible(false);
         setSelectedExpense(null);
     };
@@ -167,9 +169,12 @@ const ExpenseTable: React.FC = ({ data }: ExpenseTableProps) => {
                             label='Title'
                             name='title'
                             rules={[
-                                { required: true, message: 'Please input!' },
+                                {
+                                    required: true,
+                                    message: 'Title is required',
+                                },
                             ]}>
-                            <Input defaultValue={selectedExpense.title} />
+                            <Input />
                         </Form.Item>
                         <Form.Item
                             label='Amount'
@@ -202,16 +207,16 @@ const ExpenseTable: React.FC = ({ data }: ExpenseTableProps) => {
                         </Form.Item>
                         <Form.Item
                             label='Date spent'
-                            name='dateSpent'
+                            name='spentDate'
                             rules={[
-                                { required: true, message: 'Please input!' },
+                                {
+                                    required: true,
+                                    message: 'Date spent is required',
+                                },
                             ]}>
-                            <DatePicker
-                                defaultValue={dayjs(selectedExpense.spentDate)}
-                                format={DATE_FORMAT}
-                            />
+                            <DatePicker format={DATE_FORMAT} />
                         </Form.Item>
-                        <Form.Item label='Note' name='TextArea'>
+                        <Form.Item label='Note' name='note'>
                             <Input.TextArea
                                 defaultValue={selectedExpense.note}
                             />
