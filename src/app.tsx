@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client';
 
-const root = createRoot(document.body);
+const root = createRoot(document.getElementById('root'));
 
 import React, { useState } from 'react';
 import './index.css';

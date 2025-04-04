@@ -1,33 +1,52 @@
-import { Expense } from '../dtos/expense';
-import { ExpenseRepository } from '../repository/expense-repository';
-
-const mockData: Expense[] = [
-    {
-        id: 1,
-        title: 'Buy milk',
-        amount: 30000,
-        dateSpent: new Date(),
-        categories: [{ id: 1, value: 'Food' }],
-    },
-];
+import { Adapter } from '../adapters/base';
+import { CreateExpenseDto, Expense, ExpenseDBRow } from '../dtos/expense';
+import { DatabaseRepository } from '../repository/database';
 
 export class ExpenseService {
-    constructor(private expenseRepo: ExpenseRepository) {}
+    constructor(
+        private databaseRepository: DatabaseRepository,
+        private adapter: Adapter<ExpenseDBRow, Expense>
+    ) {}
 
-    getAll(filterString?: string): Expense[] {
-        let data = [];
-        for (let i = 1; i <= 10; i++) {
-            data.push({
-                id: i,
-                title: 'Milk',
-                amount: 5000 * i,
-                dateSpent: new Date(),
-                categories: [
-                    { id: 1, value: 'Food' },
-                    { id: 2, value: 'Books' },
-                ],
-            });
-        }
-        return data;
+    public getAll(filterString?: string): Expense[] {
+        const data: ExpenseDBRow[] = this.databaseRepository
+            .prepare(
+                `SELECT e.id, e.title, e.amount, e.spentDate, e.note, e.categoryId, c.value as categoryValue, c.name as categoryName
+                FROM expenses as e 
+                INNER JOIN categories as c 
+                ON c.rowid = e.categoryId;`
+            )
+            .all();
+
+        return this.adapter.adaptMultiple(data);
+    }
+
+    public getById(id: number): Expense {
+        const expense: ExpenseDBRow = this.databaseRepository
+            .prepare(
+                `SELECT e.id, e.title, e.amount, e.spentDate, e.note, e.categoryId, c.value as categoryValue, c.name as categoryName
+                FROM expenses as e 
+                INNER JOIN categories as c 
+                ON c.rowid = e.categoryId
+                WHERE e.id = ?;`
+            )
+            .get(id);
+        return this.adapter.adapt(expense);
+    }
+
+    public update(data: CreateExpenseDto): Expense {
+        this.databaseRepository
+            .prepare(
+                `UPDATE expenses
+                SET title = @title,
+                amount = @amount,
+                spentDate = @spentDate,
+                note = @note,
+                categoryId = @categoryId
+                WHERE id = @id;
+                `
+            )
+            .run(data);
+        return this.getById(data.id);
     }
 }
