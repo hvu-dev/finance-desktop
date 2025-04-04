@@ -1,21 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import {
-    Button,
-    DatePicker,
-    Form,
-    Input,
-    InputNumber,
-    Modal,
-    Popconfirm,
-    Select,
-    Space,
-    Table,
-    TableProps,
-    Tag,
-} from 'antd';
-import { CreateExpenseDto, Expense } from 'src/database/dtos/expense';
+import React from 'react';
+import { Button, Popconfirm, Space, Table, TableProps, Tag } from 'antd';
+import { Expense } from 'src/database/dtos/expense';
 import dayjs from 'dayjs';
-import { Category } from 'src/database/dtos/category';
 import { DATE_FORMAT } from '../const';
 
 const COLOR_TAGS_MAP = {
@@ -29,14 +15,16 @@ export type ExpenseTableProps = {
     onTitleClick: Function;
     onUpdateButtonClick: Function;
     onDeleteButtonClick: Function;
+    isLoading: boolean;
 };
 
-const ExpenseTable: React.FC = ({
+const ExpenseTable: React.FC<ExpenseTableProps> = ({
     data,
     onDeleteButtonClick,
     onUpdateButtonClick,
     onTitleClick,
-}: ExpenseTableProps) => {
+    isLoading,
+}) => {
     const columns: TableProps<Expense>['columns'] = [
         {
             title: 'Title',
@@ -103,7 +91,12 @@ const ExpenseTable: React.FC = ({
 
     return (
         <>
-            <Table<Expense> columns={columns} dataSource={data} rowKey={'id'} />
+            <Table<Expense>
+                loading={isLoading}
+                columns={columns}
+                dataSource={data}
+                rowKey={'id'}
+            />
         </>
     );
 };
