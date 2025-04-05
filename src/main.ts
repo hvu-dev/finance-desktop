@@ -4,10 +4,14 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import started from 'electron-squirrel-startup';
 import ServiceFactory from './database/services/service-factory';
 
-// Reference: https://day.js.org/docs/en/plugin/custom-parse-format
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+
 dayjs.extend(customParseFormat);
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const DEBUG = true;
 

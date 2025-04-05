@@ -37,7 +37,7 @@ export class ExpenseService {
                 FROM expenses as e 
                 INNER JOIN categories as c 
                 ON c.rowid = e.categoryId
-                ORDER BY strftime('%d/%m/%Y', e.spentDate) DESC;`
+                ORDER BY e.spentDate DESC;`
             )
             .all();
 

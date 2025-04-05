@@ -71,7 +71,7 @@ const ExpenseComponent: React.FC = () => {
             ...form.getFieldsValue(),
             title: form.getFieldValue('title'),
             amount: form.getFieldValue('amount'),
-            spentDate: form.getFieldValue('spentDate').format(DATE_FORMAT),
+            spentDate: form.getFieldValue('spentDate').toISOString(),
             note: form.getFieldValue('note'),
             categoryId: categories.find(
                 (element) => element.value === form.getFieldValue('category')
@@ -82,7 +82,11 @@ const ExpenseComponent: React.FC = () => {
         return window.expenseService
             .create(createExpenseDto)
             .then((newExpense: Expense) => {
-                setExpenses([newExpense, ...expenses]);
+                setExpenses(
+                    [...expenses, newExpense].sort((a, b) =>
+                        a.spentDate >= b.spentDate ? -1 : 1
+                    )
+                );
             });
     };
 
@@ -91,7 +95,7 @@ const ExpenseComponent: React.FC = () => {
             id: record.id,
             title: form.getFieldValue('title'),
             amount: form.getFieldValue('amount'),
-            spentDate: form.getFieldValue('spentDate').format(DATE_FORMAT),
+            spentDate: form.getFieldValue('spentDate').toISOString(),
             note: form.getFieldValue('note'),
             categoryId: form.getFieldValue('category').id,
         };
@@ -100,9 +104,11 @@ const ExpenseComponent: React.FC = () => {
             .update(updateExpenseDto)
             .then((updatedExpense: Expense) => {
                 setExpenses(
-                    expenses.map((e) =>
-                        e.id !== updatedExpense.id ? e : updatedExpense
-                    )
+                    expenses
+                        .map((e) =>
+                            e.id !== updatedExpense.id ? e : updatedExpense
+                        )
+                        .sort((a, b) => (a.spentDate >= b.spentDate ? -1 : 1))
                 );
             });
     };
@@ -295,7 +301,7 @@ const ExpenseComponent: React.FC = () => {
                                         message: 'Date spent is required',
                                     },
                                 ]}>
-                                <DatePicker format={DATE_FORMAT} />
+                                <DatePicker />
                             </Form.Item>
                             <Form.Item label='Note' name='note'>
                                 <Input.TextArea />

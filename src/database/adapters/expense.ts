@@ -8,7 +8,7 @@ export class ExpenseAdapter implements Adapter<ExpenseDBRow, Expense> {
             id: data.id,
             title: data.title,
             amount: data.amount,
-            spentDate: dayjs(data.spentDate, 'DD/MM/YYYY').toDate(),
+            spentDate: dayjs(data.spentDate).toDate(),
             note: data.note,
             category: {
                 id: data.categoryId,
