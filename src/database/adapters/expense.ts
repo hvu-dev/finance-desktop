@@ -1,7 +1,6 @@
 import dayjs from 'dayjs';
 import { Expense, ExpenseDBRow } from '../dtos/expense';
 import { Adapter } from './base';
-import { DATE_FORMAT } from 'src/components/const';
 
 export class ExpenseAdapter implements Adapter<ExpenseDBRow, Expense> {
     adapt(data: ExpenseDBRow): Expense {
@@ -9,7 +8,7 @@ export class ExpenseAdapter implements Adapter<ExpenseDBRow, Expense> {
             id: data.id,
             title: data.title,
             amount: data.amount,
-            spentDate: new Date(data.spentDate),
+            spentDate: dayjs(data.spentDate, 'DD/MM/YYYY').toDate(),
             note: data.note,
             category: {
                 id: data.categoryId,

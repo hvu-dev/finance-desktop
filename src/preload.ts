@@ -6,6 +6,10 @@ contextBridge.exposeInMainWorld('expenseService', {
     update: (data) => {
         return ipcRenderer.invoke('updateExpense', data);
     },
+    // @ts-ignore
+    create: (data) => {
+        return ipcRenderer.invoke('create', data);
+    },
 });
 
 contextBridge.exposeInMainWorld('categoryService', {

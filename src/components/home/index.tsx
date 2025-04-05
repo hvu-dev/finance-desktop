@@ -13,7 +13,11 @@ import {
     Select,
 } from 'antd';
 import ExpenseTable from './expense-table';
-import { CreateExpenseDto, Expense } from '../../database/dtos/expense';
+import {
+    CreateExpenseDto,
+    Expense,
+    UpdateExpenseDto,
+} from '../../database/dtos/expense';
 import { DATE_FORMAT } from '../const';
 import dayjs from 'dayjs';
 import { Category } from 'src/database/dtos/category';
@@ -40,6 +44,9 @@ const ExpenseComponent: React.FC = () => {
 
     const [selectedExpense, setSelectedExpense] = useState<Expense>(null);
 
+    const [expenseModalViewMode, setExpenseModalViewMode] =
+        useState<ExpenseModalMode>(ExpenseModalMode.VIEW);
+
     // Text states
     const [modalExpenseText, setExpenseModalText] = useState<string>('');
 
@@ -59,10 +66,28 @@ const ExpenseComponent: React.FC = () => {
         });
     }, []);
 
-    const updateExpense = (record: Expense) => {
-        setIsUpdateModalLoading(true);
+    const createExpense = (): Promise<void> => {
+        const createExpenseDto: CreateExpenseDto = {
+            ...form.getFieldsValue(),
+            title: form.getFieldValue('title'),
+            amount: form.getFieldValue('amount'),
+            spentDate: form.getFieldValue('spentDate').format(DATE_FORMAT),
+            note: form.getFieldValue('note'),
+            categoryId: categories.find(
+                (element) => element.value === form.getFieldValue('category')
+            ).id,
+        };
 
-        const updateExpenseDto: CreateExpenseDto = {
+        // @ts-ignore
+        return window.expenseService
+            .create(createExpenseDto)
+            .then((newExpense: Expense) => {
+                setExpenses([newExpense, ...expenses]);
+            });
+    };
+
+    const updateExpense = (record: Expense): Promise<void> => {
+        const updateExpenseDto: UpdateExpenseDto = {
             id: record.id,
             title: form.getFieldValue('title'),
             amount: form.getFieldValue('amount'),
@@ -71,7 +96,7 @@ const ExpenseComponent: React.FC = () => {
             categoryId: form.getFieldValue('category').id,
         };
         // @ts-ignore
-        window.expenseService
+        return window.expenseService
             .update(updateExpenseDto)
             .then((updatedExpense: Expense) => {
                 setExpenses(
@@ -79,11 +104,6 @@ const ExpenseComponent: React.FC = () => {
                         e.id !== updatedExpense.id ? e : updatedExpense
                     )
                 );
-                setTimeout(() => {
-                    setIsUpdateModalLoading(false);
-                    setIsExpenseModalVisible(false);
-                    setSelectedExpense(null);
-                }, 5000);
             });
     };
 
@@ -92,6 +112,26 @@ const ExpenseComponent: React.FC = () => {
     };
 
     const handleDeleteButtonClick = (record: Expense) => {};
+
+    const handleExpenseOkButtonClick = (record: Expense) => {
+        setIsUpdateModalLoading(true);
+        let response: Promise<void> = null;
+        if (expenseModalViewMode === ExpenseModalMode.CREATE) {
+            response = createExpense();
+        } else {
+            response = updateExpense(record);
+        }
+
+        response.finally(() => {
+            hideExpenseModal();
+        });
+    };
+
+    const hideExpenseModal = () => {
+        setIsUpdateModalLoading(false);
+        setIsExpenseModalVisible(false);
+        setSelectedExpense(null);
+    };
 
     const toggleExpenseModalVisibility = (
         record: Expense,
@@ -117,6 +157,7 @@ const ExpenseComponent: React.FC = () => {
             });
         }
 
+        setExpenseModalViewMode(mode);
         setIsExpenseModalVisible(true);
         setSelectedExpense(record);
     };
@@ -190,7 +231,9 @@ const ExpenseComponent: React.FC = () => {
                     <Modal
                         title={`${modalExpenseText} Expense`}
                         open={isUpdateModalVisible}
-                        onOk={() => updateExpense(selectedExpense)}
+                        onOk={() => {
+                            handleExpenseOkButtonClick(selectedExpense);
+                        }}
                         onCancel={() => setIsExpenseModalVisible(false)}
                         okButtonProps={{
                             style: {

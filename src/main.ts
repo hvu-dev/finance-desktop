@@ -1,7 +1,13 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
+
+import { app, BrowserWindow, ipcMain } from 'electron';
 import started from 'electron-squirrel-startup';
 import ServiceFactory from './database/services/service-factory';
+
+// Reference: https://day.js.org/docs/en/plugin/custom-parse-format
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import dayjs from 'dayjs';
+dayjs.extend(customParseFormat);
 
 const DEBUG = true;
 
@@ -40,14 +46,20 @@ const initializeHandlers = () => {
     const factory = new ServiceFactory();
     const expenseService = factory.createExpenseService();
     const categoryService = factory.createCategoryService();
+    // Expense handler
+    ipcMain.handle('create', (_, data) => {
+        return expenseService.create(data);
+    });
+
     ipcMain.handle('getAllExpenses', () => {
         return expenseService.getAll();
     });
 
-    ipcMain.handle('updateExpense', (event, data) => {
+    ipcMain.handle('updateExpense', (_, data) => {
         return expenseService.update(data);
     });
 
+    // Category handler
     ipcMain.handle('getAllCategories', () => {
         return categoryService.getAll();
     });

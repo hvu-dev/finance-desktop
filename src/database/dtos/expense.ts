@@ -28,3 +28,12 @@ export type CreateExpenseDto = {
     note: string;
     categoryId: number;
 };
+
+export type UpdateExpenseDto = {
+    id: number;
+    title: string;
+    amount: number;
+    spentDate: string;
+    note: string;
+    categoryId: number;
+};
