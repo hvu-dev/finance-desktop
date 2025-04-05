@@ -18,21 +18,30 @@ import { DATE_FORMAT } from '../const';
 import dayjs from 'dayjs';
 import { Category } from 'src/database/dtos/category';
 
-const cardStyle: CSSProperties = {
-    textAlign: 'center',
-};
+enum ExpenseModalMode {
+    CREATE,
+    UPDATE,
+    VIEW,
+}
 
 const ExpenseComponent: React.FC = () => {
-    const [expenses, setExpenses] = useState<Expense[]>([]);
+    // Status states
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [isUpdateModalVisible, setIsUpdateModalVisible] =
+    const [isUpdateModalVisible, setIsExpenseModalVisible] =
         useState<boolean>(false);
     const [isUpdateModalLoading, setIsUpdateModalLoading] =
         useState<boolean>(false);
     const [updateFormDisabled, setUpdateFormDisabled] =
         useState<boolean>(false);
-    const [selectedExpense, setSelectedExpense] = useState<Expense>(null);
+
+    // Data states
+    const [expenses, setExpenses] = useState<Expense[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
+
+    const [selectedExpense, setSelectedExpense] = useState<Expense>(null);
+
+    // Text states
+    const [modalExpenseText, setExpenseModalText] = useState<string>('');
 
     const [form] = Form.useForm();
 
@@ -72,27 +81,44 @@ const ExpenseComponent: React.FC = () => {
                 );
                 setTimeout(() => {
                     setIsUpdateModalLoading(false);
-                    setIsUpdateModalVisible(false);
+                    setIsExpenseModalVisible(false);
                     setSelectedExpense(null);
                 }, 5000);
             });
     };
 
     const handleUpdateButtonClick = (record: Expense) => {
-        toggleExpenseModalVisibility(record, true, false);
+        toggleExpenseModalVisibility(record, ExpenseModalMode.UPDATE);
     };
 
     const handleDeleteButtonClick = (record: Expense) => {};
 
     const toggleExpenseModalVisibility = (
         record: Expense,
-        isVisiable: boolean,
-        disabledForm: boolean = false
+        mode: ExpenseModalMode = ExpenseModalMode.VIEW
     ) => {
-        setUpdateFormDisabled(disabledForm);
-        setIsUpdateModalVisible(isVisiable);
+        if (mode === ExpenseModalMode.VIEW) {
+            setUpdateFormDisabled(true);
+            setExpenseModalText('View');
+        } else if (mode === ExpenseModalMode.UPDATE) {
+            setUpdateFormDisabled(false);
+            setExpenseModalText('Update');
+        } else if (mode === ExpenseModalMode.CREATE) {
+            setUpdateFormDisabled(false);
+            setExpenseModalText('Create');
+        }
+
+        if (mode === ExpenseModalMode.CREATE) {
+            form.resetFields();
+        } else {
+            form.setFieldsValue({
+                ...record,
+                spentDate: dayjs(record.spentDate),
+            });
+        }
+
+        setIsExpenseModalVisible(true);
         setSelectedExpense(record);
-        form.setFieldsValue({ ...record, spentDate: dayjs(record.spentDate) });
     };
 
     return (
@@ -100,17 +126,29 @@ const ExpenseComponent: React.FC = () => {
             <div>
                 <Row justify='space-evenly'>
                     <Col span={8}>
-                        <Card title='Total amount spent' style={cardStyle}>
+                        <Card
+                            title='Total amount spent'
+                            style={{
+                                textAlign: 'center',
+                            }}>
                             100.000
                         </Card>
                     </Col>
                     <Col span={8}>
-                        <Card title='Most spent category' style={cardStyle}>
+                        <Card
+                            title='Most spent category'
+                            style={{
+                                textAlign: 'center',
+                            }}>
                             100.000
                         </Card>
                     </Col>
                     <Col span={8}>
-                        <Card title='Remaining budget' style={cardStyle}>
+                        <Card
+                            title='Remaining budget'
+                            style={{
+                                textAlign: 'center',
+                            }}>
                             100.000
                         </Card>
                     </Col>
@@ -119,7 +157,15 @@ const ExpenseComponent: React.FC = () => {
                     <Col span={24}>
                         <Flex gap='small' align='center' justify='flex-end'>
                             <Button>Export to Excel</Button>
-                            <Button color='primary' variant='solid'>
+                            <Button
+                                color='primary'
+                                variant='solid'
+                                onClick={() =>
+                                    toggleExpenseModalVisibility(
+                                        null,
+                                        ExpenseModalMode.CREATE
+                                    )
+                                }>
                                 Create new
                             </Button>
                         </Flex>
@@ -133,23 +179,26 @@ const ExpenseComponent: React.FC = () => {
                             onUpdateButtonClick={handleUpdateButtonClick}
                             onDeleteButtonClick={handleDeleteButtonClick}
                             onTitleClick={(record: Expense) =>
-                                toggleExpenseModalVisibility(record, true, true)
+                                toggleExpenseModalVisibility(
+                                    record,
+                                    ExpenseModalMode.VIEW
+                                )
                             }></ExpenseTable>
                     </Col>
                 </Row>
                 {isUpdateModalVisible && (
                     <Modal
-                        title='Expense'
+                        title={`${modalExpenseText} Expense`}
                         open={isUpdateModalVisible}
                         onOk={() => updateExpense(selectedExpense)}
-                        onCancel={() => setIsUpdateModalVisible(false)}
+                        onCancel={() => setIsExpenseModalVisible(false)}
                         okButtonProps={{
                             style: {
                                 display: updateFormDisabled && 'none',
                             },
                             loading: isUpdateModalLoading,
                         }}
-                        okText='Update'>
+                        okText={modalExpenseText}>
                         <Form
                             form={form}
                             labelCol={{ span: 6 }}
