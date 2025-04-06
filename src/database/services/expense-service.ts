@@ -1,5 +1,10 @@
 import { Adapter } from '../adapters/base';
-import { CreateExpenseDto, Expense, ExpenseDBRow } from '../dtos/expense';
+import {
+    CreateExpenseDto,
+    Expense,
+    ExpenseDBRow,
+    UpdateExpenseDto,
+} from '../dtos/expense';
 import { DatabaseRepository } from '../repository/database';
 
 export class ExpenseService {
@@ -8,13 +13,31 @@ export class ExpenseService {
         private adapter: Adapter<ExpenseDBRow, Expense>
     ) {}
 
+    public create(data: CreateExpenseDto): Expense {
+        const info = this.databaseRepository
+            .prepare(
+                `INSERT INTO expenses (title, amount, spentDate, note, categoryId) 
+            VALUES (@title, @amount, @spentDate, @note, @categoryId)`
+            )
+            .run(data);
+
+        if (info.changes === 1) {
+            return this.getById(info.lastInsertRowid);
+        } else {
+            // TODO: Log or raise error here
+            console.log('Failed to insert record', data);
+            return null;
+        }
+    }
+
     public getAll(filterString?: string): Expense[] {
         const data: ExpenseDBRow[] = this.databaseRepository
             .prepare(
                 `SELECT e.id, e.title, e.amount, e.spentDate, e.note, e.categoryId, c.value as categoryValue, c.name as categoryName
                 FROM expenses as e 
                 INNER JOIN categories as c 
-                ON c.rowid = e.categoryId;`
+                ON c.rowid = e.categoryId
+                ORDER BY e.spentDate DESC;`
             )
             .all();
 
@@ -34,7 +57,7 @@ export class ExpenseService {
         return this.adapter.adapt(expense);
     }
 
-    public update(data: CreateExpenseDto): Expense {
+    public update(data: UpdateExpenseDto): Expense {
         this.databaseRepository
             .prepare(
                 `UPDATE expenses

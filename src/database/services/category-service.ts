@@ -5,7 +5,7 @@ import { DatabaseRepository } from '../repository/database';
 export class CategoryService {
     constructor(
         private databaseRepository: DatabaseRepository,
-        private adapter: Adapter<CategoryDBRow[], Category[]>
+        private adapter: Adapter<CategoryDBRow, Category>
     ) {}
 
     getAll(filterString?: string): Category[] {
@@ -15,7 +15,6 @@ export class CategoryService {
                 FROM categories as c;`
             )
             .all();
-
-        return this.adapter.adapt(data);
+        return this.adapter.adaptMultiple(data);
     }
 }
