@@ -50,7 +50,9 @@ const initializeHandlers = () => {
     const factory = new ServiceFactory();
     const expenseService = factory.createExpenseService();
     const categoryService = factory.createCategoryService();
-    // Expense handler
+    const statisticService = factory.createStatisticService();
+
+    // Expense handlers
     ipcMain.handle('create', (_, data) => {
         return expenseService.create(data);
     });
@@ -63,9 +65,18 @@ const initializeHandlers = () => {
         return expenseService.update(data);
     });
 
-    // Category handler
+    // Category handlers
     ipcMain.handle('getAllCategories', () => {
         return categoryService.getAll();
+    });
+
+    // Statistic handlers
+    ipcMain.handle('getSumByExpense', () => {
+        return statisticService.getSumByExpense();
+    });
+
+    ipcMain.handle('getSumByCategory', () => {
+        return statisticService.getSumByCategory();
     });
 };
 
