@@ -18,9 +18,9 @@ import {
     Expense,
     UpdateExpenseDto,
 } from '../../database/dtos/expense';
-import { DATE_FORMAT } from '../const';
 import dayjs from 'dayjs';
 import { Category } from 'src/database/dtos/category';
+import { CategorySum } from 'src/database/dtos/statistic';
 
 enum ExpenseModalMode {
     CREATE,
@@ -44,6 +44,9 @@ const ExpenseComponent: React.FC = () => {
 
     const [selectedExpense, setSelectedExpense] = useState<Expense>(null);
 
+    const [sumByExpense, setSumByExpense] = useState<number>(0);
+    const [sumByCategory, setSumByCategory] = useState<CategorySum[]>([]);
+
     const [expenseModalViewMode, setExpenseModalViewMode] =
         useState<ExpenseModalMode>(ExpenseModalMode.VIEW);
 
@@ -59,9 +62,15 @@ const ExpenseComponent: React.FC = () => {
             window.expenseService.getAllExpenses(),
             // @ts-ignore
             window.categoryService.getAllCategories(),
+            // @ts-ignore
+            window.statisticService.getSumByExpense(),
+            // @ts-ignore
+            window.statisticService.getSumByCategory(),
         ]).then((data) => {
             setExpenses(data[0]);
             setCategories(data[1]);
+            setSumByExpense(data[2]);
+            setSumByCategory(data[3]);
             setIsLoading(false);
         });
     }, []);
@@ -172,31 +181,24 @@ const ExpenseComponent: React.FC = () => {
         <>
             <div>
                 <Row justify='space-evenly'>
-                    <Col span={8}>
+                    <Col span={12}>
                         <Card
                             title='Total amount spent'
                             style={{
                                 textAlign: 'center',
                             }}>
-                            100.000
+                            {sumByExpense}
                         </Card>
                     </Col>
-                    <Col span={8}>
+                    <Col span={12}>
                         <Card
                             title='Most spent category'
                             style={{
                                 textAlign: 'center',
                             }}>
-                            100.000
-                        </Card>
-                    </Col>
-                    <Col span={8}>
-                        <Card
-                            title='Remaining budget'
-                            style={{
-                                textAlign: 'center',
-                            }}>
-                            100.000
+                            {sumByCategory.length > 0
+                                ? sumByCategory[0].name
+                                : 'None'}
                         </Card>
                     </Col>
                 </Row>
