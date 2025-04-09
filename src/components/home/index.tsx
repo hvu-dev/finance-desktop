@@ -37,6 +37,9 @@ const ExpenseComponent: React.FC = () => {
         useState<boolean>(false);
     const [updateFormDisabled, setUpdateFormDisabled] =
         useState<boolean>(false);
+    const [expensePages, setExpensePages] = useState<{
+        [key: number]: Expense[];
+    }>(null);
 
     // Data states
     const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -67,6 +70,7 @@ const ExpenseComponent: React.FC = () => {
             // @ts-ignore
             window.statisticService.getSumByCategory(),
         ]).then((data) => {
+            setExpensePages({ 1: data[0] });
             setExpenses(data[0]);
             setCategories(data[1]);
             setSumByExpense(data[2]);
@@ -141,6 +145,11 @@ const ExpenseComponent: React.FC = () => {
             hideExpenseModal();
         });
     };
+
+    const handlePageChangeButtonClick = (
+        page: number,
+        pageSize: number = 5
+    ): void => {};
 
     const hideExpenseModal = () => {
         setIsUpdateModalLoading(false);
@@ -225,8 +234,9 @@ const ExpenseComponent: React.FC = () => {
                         <ExpenseTable
                             data={expenses}
                             isLoading={isLoading}
-                            onUpdateButtonClick={handleUpdateButtonClick}
                             onDeleteButtonClick={handleDeleteButtonClick}
+                            onChangePage={handlePageChangeButtonClick}
+                            onUpdateButtonClick={handleUpdateButtonClick}
                             onTitleClick={(record: Expense) =>
                                 toggleExpenseModalVisibility(
                                     record,
