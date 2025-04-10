@@ -16,6 +16,7 @@ import ExpenseTable from './expense-table';
 import {
     CreateExpenseDto,
     Expense,
+    ExpenseGetFilterParams,
     UpdateExpenseDto,
 } from '../../database/dtos/expense';
 import dayjs from 'dayjs';
@@ -37,12 +38,14 @@ const ExpenseComponent: React.FC = () => {
         useState<boolean>(false);
     const [updateFormDisabled, setUpdateFormDisabled] =
         useState<boolean>(false);
-    const [expensePages, setExpensePages] = useState<{
-        [key: number]: Expense[];
-    }>(null);
+    const [loadedPages, setLoadedPages] = useState<number[]>([]);
 
     // Data states
     const [expenses, setExpenses] = useState<Expense[]>([]);
+    const [displayExpenses, setDisplayExpenses] = useState<Expense[]>([]);
+
+    const [expensesCount, setExpensesCount] = useState<number>(0);
+
     const [categories, setCategories] = useState<Category[]>([]);
 
     const [selectedExpense, setSelectedExpense] = useState<Expense>(null);
@@ -62,7 +65,9 @@ const ExpenseComponent: React.FC = () => {
         setIsLoading(true);
         Promise.all([
             // @ts-ignore
-            window.expenseService.getAllExpenses(),
+            window.expenseService.getAllExpenses({ page: 1, pageSize: 5 }),
+            // @ts-ignore
+            window.expenseService.countAllExpenses(),
             // @ts-ignore
             window.categoryService.getAllCategories(),
             // @ts-ignore
@@ -70,11 +75,16 @@ const ExpenseComponent: React.FC = () => {
             // @ts-ignore
             window.statisticService.getSumByCategory(),
         ]).then((data) => {
-            setExpensePages({ 1: data[0] });
             setExpenses(data[0]);
-            setCategories(data[1]);
-            setSumByExpense(data[2]);
-            setSumByCategory(data[3]);
+            setDisplayExpenses(data[0]);
+            setExpensesCount(data[1]);
+            setLoadedPages([1]);
+
+            setCategories(data[2]);
+
+            setSumByExpense(data[3]);
+            setSumByCategory(data[4]);
+
             setIsLoading(false);
         });
     }, []);
@@ -140,16 +150,40 @@ const ExpenseComponent: React.FC = () => {
         } else {
             response = updateExpense(record);
         }
-
-        response.finally(() => {
-            hideExpenseModal();
-        });
+        hideExpenseModal();
     };
 
     const handlePageChangeButtonClick = (
         page: number,
         pageSize: number = 5
-    ): void => {};
+    ): void => {
+        if (!loadedPages.includes(page)) {
+            // @ts-ignore
+            window.expenseService
+                .getAllExpenses({ page, pageSize })
+                .then((data: Expense[]) => {
+                    setExpenses(() => {
+                        const newData = [
+                            ...expenses.slice(0, pageSize * (page - 1)),
+                            ...data,
+                            ...expenses.slice((page - 1) * pageSize),
+                        ];
+                        setDisplayExpenses(() =>
+                            newData.slice(
+                                (page - 1) * pageSize,
+                                page * pageSize
+                            )
+                        );
+                        return newData;
+                    });
+                    setLoadedPages([...loadedPages, page]);
+                });
+        } else {
+            setDisplayExpenses(() =>
+                expenses.slice((page - 1) * pageSize, page * pageSize)
+            );
+        }
+    };
 
     const hideExpenseModal = () => {
         setIsUpdateModalLoading(false);
@@ -232,7 +266,7 @@ const ExpenseComponent: React.FC = () => {
                 <Row>
                     <Col span={24}>
                         <ExpenseTable
-                            data={expenses}
+                            data={displayExpenses}
                             isLoading={isLoading}
                             onDeleteButtonClick={handleDeleteButtonClick}
                             onChangePage={handlePageChangeButtonClick}
@@ -242,7 +276,8 @@ const ExpenseComponent: React.FC = () => {
                                     record,
                                     ExpenseModalMode.VIEW
                                 )
-                            }></ExpenseTable>
+                            }
+                            totalSize={expensesCount}></ExpenseTable>
                     </Col>
                 </Row>
                 {isUpdateModalVisible && (

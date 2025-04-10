@@ -18,6 +18,10 @@ const COLOR_TAGS_MAP = {
     books: 'green',
 };
 
+const paginationConfig = {
+    pageSize: 5,
+};
+
 export type ExpenseTableProps = {
     data: Expense[];
     isLoading: boolean;
@@ -25,15 +29,17 @@ export type ExpenseTableProps = {
     onDeleteButtonClick: Function;
     onTitleClick: Function;
     onUpdateButtonClick: Function;
+    totalSize: number;
 };
 
 const ExpenseTable: React.FC<ExpenseTableProps> = ({
     data,
+    isLoading,
     onChangePage,
     onDeleteButtonClick,
     onUpdateButtonClick,
     onTitleClick,
-    isLoading,
+    totalSize,
 }) => {
     const columns: TableProps<Expense>['columns'] = [
         {
@@ -111,7 +117,9 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({
             <Pagination
                 align='end'
                 defaultCurrent={1}
-                total={50}
+                total={totalSize}
+                // TODO: make this configurable
+                pageSize={paginationConfig.pageSize}
                 onChange={(page, _) => onChangePage(page)}
             />
         </>
