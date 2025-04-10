@@ -1,4 +1,5 @@
 import { Category } from './category';
+import { PaginationParams } from './common';
 
 export type ExpenseDBRow = {
     id: number;
@@ -37,3 +38,5 @@ export type UpdateExpenseDto = {
     note: string;
     categoryId: number;
 };
+
+export type ExpenseGetFilterParams = {} & PaginationParams;

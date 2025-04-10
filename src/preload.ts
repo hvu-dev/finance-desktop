@@ -1,7 +1,10 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('expenseService', {
-    getAllExpenses: () => ipcRenderer.invoke('getAllExpenses'),
+    // @ts-ignore
+    getAllExpenses: (data) => {
+        return ipcRenderer.invoke('getAllExpenses', data);
+    },
     // @ts-ignore
     update: (data) => {
         return ipcRenderer.invoke('updateExpense', data);
@@ -10,6 +13,7 @@ contextBridge.exposeInMainWorld('expenseService', {
     create: (data) => {
         return ipcRenderer.invoke('create', data);
     },
+    countAllExpenses: () => ipcRenderer.invoke('countAllExpenses'),
 });
 
 contextBridge.exposeInMainWorld('categoryService', {

@@ -28,6 +28,11 @@ enum ExpenseModalMode {
     VIEW,
 }
 
+// TODO: replace with useContext and global settings
+const expenseTableConfig = {
+    pageSize: 10,
+};
+
 const ExpenseComponent: React.FC = () => {
     // Status states
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -37,9 +42,15 @@ const ExpenseComponent: React.FC = () => {
         useState<boolean>(false);
     const [updateFormDisabled, setUpdateFormDisabled] =
         useState<boolean>(false);
+    const [loadedPages, setLoadedPages] = useState<number[]>([]);
+    const [currentPage, setCurrentPage] = useState<number>(1);
 
     // Data states
     const [expenses, setExpenses] = useState<Expense[]>([]);
+    const [displayExpenses, setDisplayExpenses] = useState<Expense[]>([]);
+
+    const [expensesCount, setExpensesCount] = useState<number>(0);
+
     const [categories, setCategories] = useState<Category[]>([]);
 
     const [selectedExpense, setSelectedExpense] = useState<Expense>(null);
@@ -59,7 +70,12 @@ const ExpenseComponent: React.FC = () => {
         setIsLoading(true);
         Promise.all([
             // @ts-ignore
-            window.expenseService.getAllExpenses(),
+            window.expenseService.getAllExpenses({
+                page: 1,
+                pageSize: expenseTableConfig.pageSize,
+            }),
+            // @ts-ignore
+            window.expenseService.countAllExpenses(),
             // @ts-ignore
             window.categoryService.getAllCategories(),
             // @ts-ignore
@@ -68,9 +84,15 @@ const ExpenseComponent: React.FC = () => {
             window.statisticService.getSumByCategory(),
         ]).then((data) => {
             setExpenses(data[0]);
-            setCategories(data[1]);
-            setSumByExpense(data[2]);
-            setSumByCategory(data[3]);
+            setDisplayExpenses(data[0]);
+            setExpensesCount(data[1]);
+            setLoadedPages([1]);
+
+            setCategories(data[2]);
+
+            setSumByExpense(data[3]);
+            setSumByCategory(data[4]);
+
             setIsLoading(false);
         });
     }, []);
@@ -91,11 +113,18 @@ const ExpenseComponent: React.FC = () => {
         return window.expenseService
             .create(createExpenseDto)
             .then((newExpense: Expense) => {
-                setExpenses(
-                    [...expenses, newExpense].sort((a, b) =>
+                setExpenses((prevExpenses) => {
+                    const data = [...prevExpenses, newExpense].sort((a, b) =>
                         a.spentDate >= b.spentDate ? -1 : 1
-                    )
-                );
+                    );
+                    setDisplayExpenses(
+                        data.slice(
+                            (currentPage - 1) * expenseTableConfig.pageSize,
+                            currentPage * expenseTableConfig.pageSize
+                        )
+                    );
+                    return data;
+                });
             });
     };
 
@@ -136,10 +165,48 @@ const ExpenseComponent: React.FC = () => {
         } else {
             response = updateExpense(record);
         }
+        hideExpenseModal();
+    };
 
-        response.finally(() => {
-            hideExpenseModal();
-        });
+    const handlePageChangeButtonClick = (page: number): void => {
+        if (!loadedPages.includes(page)) {
+            // @ts-ignore
+            window.expenseService
+                .getAllExpenses({
+                    page: page,
+                    pageSize: expenseTableConfig.pageSize,
+                })
+                .then((data: Expense[]) => {
+                    setExpenses((prevExpenses) => {
+                        const newData = [
+                            ...prevExpenses.slice(
+                                0,
+                                expenseTableConfig.pageSize * (page - 1)
+                            ),
+                            ...data,
+                            ...prevExpenses.slice(
+                                (page - 1) * expenseTableConfig.pageSize
+                            ),
+                        ];
+                        setDisplayExpenses(() =>
+                            newData.slice(
+                                (page - 1) * expenseTableConfig.pageSize,
+                                page * expenseTableConfig.pageSize
+                            )
+                        );
+                        return newData;
+                    });
+                    setCurrentPage(page);
+                    setLoadedPages([...loadedPages, page]);
+                });
+        } else {
+            setDisplayExpenses(() =>
+                expenses.slice(
+                    (page - 1) * expenseTableConfig.pageSize,
+                    page * expenseTableConfig.pageSize
+                )
+            );
+        }
     };
 
     const hideExpenseModal = () => {
@@ -223,16 +290,19 @@ const ExpenseComponent: React.FC = () => {
                 <Row>
                     <Col span={24}>
                         <ExpenseTable
-                            data={expenses}
+                            data={displayExpenses}
                             isLoading={isLoading}
-                            onUpdateButtonClick={handleUpdateButtonClick}
                             onDeleteButtonClick={handleDeleteButtonClick}
+                            onChangePage={handlePageChangeButtonClick}
+                            onUpdateButtonClick={handleUpdateButtonClick}
                             onTitleClick={(record: Expense) =>
                                 toggleExpenseModalVisibility(
                                     record,
                                     ExpenseModalMode.VIEW
                                 )
-                            }></ExpenseTable>
+                            }
+                            pageSize={expenseTableConfig.pageSize}
+                            totalSize={expensesCount}></ExpenseTable>
                     </Col>
                 </Row>
                 {isUpdateModalVisible && (

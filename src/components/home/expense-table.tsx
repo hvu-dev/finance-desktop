@@ -1,5 +1,13 @@
 import React from 'react';
-import { Button, Popconfirm, Space, Table, TableProps, Tag } from 'antd';
+import {
+    Button,
+    Pagination,
+    Popconfirm,
+    Space,
+    Table,
+    TableProps,
+    Tag,
+} from 'antd';
 import { Expense } from 'src/database/dtos/expense';
 import dayjs from 'dayjs';
 import { DATE_FORMAT } from '../const';
@@ -12,18 +20,24 @@ const COLOR_TAGS_MAP = {
 
 export type ExpenseTableProps = {
     data: Expense[];
+    isLoading: boolean;
+    onChangePage: Function;
+    onDeleteButtonClick: Function;
     onTitleClick: Function;
     onUpdateButtonClick: Function;
-    onDeleteButtonClick: Function;
-    isLoading: boolean;
+    pageSize: number;
+    totalSize: number;
 };
 
 const ExpenseTable: React.FC<ExpenseTableProps> = ({
     data,
+    isLoading,
+    onChangePage,
     onDeleteButtonClick,
     onUpdateButtonClick,
     onTitleClick,
-    isLoading,
+    pageSize,
+    totalSize,
 }) => {
     const columns: TableProps<Expense>['columns'] = [
         {
@@ -96,6 +110,14 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({
                 columns={columns}
                 dataSource={data}
                 rowKey={'id'}
+                pagination={false}
+            />
+            <Pagination
+                align='end'
+                defaultCurrent={1}
+                total={totalSize}
+                pageSize={pageSize}
+                onChange={(page, _) => onChangePage(page)}
             />
         </>
     );

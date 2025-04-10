@@ -53,12 +53,16 @@ const initializeHandlers = () => {
     const statisticService = factory.createStatisticService();
 
     // Expense handlers
+    ipcMain.handle('countAllExpenses', (): number => {
+        return expenseService.countAll();
+    });
+
     ipcMain.handle('create', (_, data) => {
         return expenseService.create(data);
     });
 
-    ipcMain.handle('getAllExpenses', () => {
-        return expenseService.getAll();
+    ipcMain.handle('getAllExpenses', (_, data) => {
+        return expenseService.getAll(data);
     });
 
     ipcMain.handle('updateExpense', (_, data) => {
