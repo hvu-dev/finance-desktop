@@ -16,7 +16,6 @@ import ExpenseTable from './expense-table';
 import {
     CreateExpenseDto,
     Expense,
-    ExpenseGetFilterParams,
     UpdateExpenseDto,
 } from '../../database/dtos/expense';
 import dayjs from 'dayjs';
@@ -29,6 +28,11 @@ enum ExpenseModalMode {
     VIEW,
 }
 
+// TODO: replace with useContext and global settings
+const expenseTableConfig = {
+    pageSize: 10,
+};
+
 const ExpenseComponent: React.FC = () => {
     // Status states
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -39,6 +43,7 @@ const ExpenseComponent: React.FC = () => {
     const [updateFormDisabled, setUpdateFormDisabled] =
         useState<boolean>(false);
     const [loadedPages, setLoadedPages] = useState<number[]>([]);
+    const [currentPage, setCurrentPage] = useState<number>(1);
 
     // Data states
     const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -65,7 +70,10 @@ const ExpenseComponent: React.FC = () => {
         setIsLoading(true);
         Promise.all([
             // @ts-ignore
-            window.expenseService.getAllExpenses({ page: 1, pageSize: 5 }),
+            window.expenseService.getAllExpenses({
+                page: 1,
+                pageSize: expenseTableConfig.pageSize,
+            }),
             // @ts-ignore
             window.expenseService.countAllExpenses(),
             // @ts-ignore
@@ -105,11 +113,18 @@ const ExpenseComponent: React.FC = () => {
         return window.expenseService
             .create(createExpenseDto)
             .then((newExpense: Expense) => {
-                setExpenses(
-                    [...expenses, newExpense].sort((a, b) =>
+                setExpenses((prevExpenses) => {
+                    const data = [...prevExpenses, newExpense].sort((a, b) =>
                         a.spentDate >= b.spentDate ? -1 : 1
-                    )
-                );
+                    );
+                    setDisplayExpenses(
+                        data.slice(
+                            (currentPage - 1) * expenseTableConfig.pageSize,
+                            currentPage * expenseTableConfig.pageSize
+                        )
+                    );
+                    return data;
+                });
             });
     };
 
@@ -153,34 +168,43 @@ const ExpenseComponent: React.FC = () => {
         hideExpenseModal();
     };
 
-    const handlePageChangeButtonClick = (
-        page: number,
-        pageSize: number = 5
-    ): void => {
+    const handlePageChangeButtonClick = (page: number): void => {
         if (!loadedPages.includes(page)) {
             // @ts-ignore
             window.expenseService
-                .getAllExpenses({ page, pageSize })
+                .getAllExpenses({
+                    page: page,
+                    pageSize: expenseTableConfig.pageSize,
+                })
                 .then((data: Expense[]) => {
-                    setExpenses(() => {
+                    setExpenses((prevExpenses) => {
                         const newData = [
-                            ...expenses.slice(0, pageSize * (page - 1)),
+                            ...prevExpenses.slice(
+                                0,
+                                expenseTableConfig.pageSize * (page - 1)
+                            ),
                             ...data,
-                            ...expenses.slice((page - 1) * pageSize),
+                            ...prevExpenses.slice(
+                                (page - 1) * expenseTableConfig.pageSize
+                            ),
                         ];
                         setDisplayExpenses(() =>
                             newData.slice(
-                                (page - 1) * pageSize,
-                                page * pageSize
+                                (page - 1) * expenseTableConfig.pageSize,
+                                page * expenseTableConfig.pageSize
                             )
                         );
                         return newData;
                     });
+                    setCurrentPage(page);
                     setLoadedPages([...loadedPages, page]);
                 });
         } else {
             setDisplayExpenses(() =>
-                expenses.slice((page - 1) * pageSize, page * pageSize)
+                expenses.slice(
+                    (page - 1) * expenseTableConfig.pageSize,
+                    page * expenseTableConfig.pageSize
+                )
             );
         }
     };
@@ -277,6 +301,7 @@ const ExpenseComponent: React.FC = () => {
                                     ExpenseModalMode.VIEW
                                 )
                             }
+                            pageSize={expenseTableConfig.pageSize}
                             totalSize={expensesCount}></ExpenseTable>
                     </Col>
                 </Row>
