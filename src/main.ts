@@ -82,6 +82,10 @@ const initializeHandlers = () => {
     ipcMain.handle('getSumByCategory', () => {
         return statisticService.getSumByCategory();
     });
+
+    ipcMain.handle('getSumExpenseByPeriod', (_, data) => {
+        return statisticService.getSumExpenseByPeriod(data);
+    });
 };
 
 // This method will be called when Electron has finished

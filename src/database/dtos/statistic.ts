@@ -4,3 +4,8 @@ export type CategorySum = {
     value: string; // Category value
     total: number;
 };
+
+export type DayExpenseSum = {
+    spentDate: string;
+    total: number;
+};

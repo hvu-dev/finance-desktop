@@ -1,4 +1,4 @@
-import { CategorySum } from '../dtos/statistic';
+import { CategorySum, DayExpenseSum } from '../dtos/statistic';
 import { DatabaseRepository } from '../repository/database';
 
 export class StatisticService {
@@ -27,24 +27,13 @@ export class StatisticService {
     }
 
     /**
-     *
-     * @param period sum of expense by period (week - 7 days, month - 30 days, year - 365 days)
+     * Get expense summary by each period
+     * @param period sum of expense by period
      */
-    public getSumExpenseByPeriod(period = 'week') {
-        let numberOfDays = 0;
-
-        switch (period) {
-            case 'month':
-                numberOfDays = 30;
-            case 'year':
-                numberOfDays = 365;
-            default:
-                numberOfDays = 7;
-        }
-
+    public getSumExpenseByPeriod(numberOfDays: number = 30): DayExpenseSum[] {
         return this.databaseRepository
             .prepare(
-                `SELECT e.spentDate, SUM(e.amount) as total
+                `SELECT date(e.spentDate) as spentDate, SUM(e.amount) as total
                 FROM expenses as e
                 WHERE (JULIANDAY('now') - JULIANDAY(e.spentDate)) <= @numberOfDays
                 GROUP BY spentDate;`

@@ -12,7 +12,7 @@ import {
     Legend,
     ArcElement,
 } from 'chart.js';
-import { CategorySum } from 'src/database/dtos/statistic';
+import { CategorySum, DayExpenseSum } from 'src/database/dtos/statistic';
 
 ChartJS.register(
     ArcElement,
@@ -70,11 +70,49 @@ const StatisticsComponent: React.FC<StatisticsComponentProps> = ({}) => {
         Promise.all([
             // @ts-ignore
             window.statisticService.getSumByCategory(),
+            // @ts-ignore
+            window.statisticService.getSumExpenseByPeriod(30),
         ]).then((data) => {
             setSumByCategory(() => transformSumByCategoryData(data[0]));
-            setSpendingTrend(() => transformSumByCategoryData(data[0]));
+            setSpendingTrend(() => transformSumExpenseByDayData(data[1]));
         });
     }, []);
+
+    const transformSumExpenseByDayData = (data: DayExpenseSum[]): ChartData => {
+        let transformedData: number[] = [];
+        let labels: string[] = [];
+        for (const d of data) {
+            labels.push(d.spentDate);
+            transformedData.push(d.total);
+        }
+
+        return {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Expense Breakdown',
+                    data: transformedData,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                    ],
+                    borderWidth: 1,
+                },
+            ],
+        };
+    };
 
     const transformSumByCategoryData = (data: CategorySum[]): ChartData => {
         let transformedData: number[] = [];
