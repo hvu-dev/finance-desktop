@@ -25,4 +25,30 @@ export class StatisticService {
             .pluck()
             .get();
     }
+
+    /**
+     *
+     * @param period sum of expense by period (week - 7 days, month - 30 days, year - 365 days)
+     */
+    public getSumExpenseByPeriod(period = 'week') {
+        let numberOfDays = 0;
+
+        switch (period) {
+            case 'month':
+                numberOfDays = 30;
+            case 'year':
+                numberOfDays = 365;
+            default:
+                numberOfDays = 7;
+        }
+
+        return this.databaseRepository
+            .prepare(
+                `SELECT e.spentDate, SUM(e.amount) as total
+                FROM expenses as e
+                WHERE (JULIANDAY('now') - JULIANDAY(e.spentDate)) <= @numberOfDays
+                GROUP BY spentDate;`
+            )
+            .all({ numberOfDays: numberOfDays });
+    }
 }

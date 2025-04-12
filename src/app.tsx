@@ -4,7 +4,7 @@ const root = createRoot(document.getElementById('root'));
 
 import React, { useState } from 'react';
 import './index.css';
-import { DesktopOutlined, PieChartOutlined } from '@ant-design/icons';
+import { BookOutlined, PieChartOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Layout, Menu, theme, Typography } from 'antd';
 import { BrowserRouter, Route, Routes, Link } from 'react-router';
@@ -30,7 +30,7 @@ function getItem(
 }
 
 const items: MenuItem[] = [
-    getItem(<Link to='/'>Numbers</Link>, '1', <DesktopOutlined />),
+    getItem(<Link to='/'>Expenses</Link>, '1', <BookOutlined />),
     getItem(
         <Link to='/statistics'>Statistics</Link>,
         '2',
