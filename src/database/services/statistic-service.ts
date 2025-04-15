@@ -33,11 +33,17 @@ export class StatisticService {
     public getSumExpenseByPeriod(numberOfDays: number = 30): DayExpenseSum[] {
         return this.databaseRepository
             .prepare(
-                `SELECT date(e.spentDate) as spentDate, SUM(e.amount) as total
-                FROM expenses as e
-                WHERE (JULIANDAY('now') - JULIANDAY(e.spentDate)) <= @numberOfDays
-                GROUP BY spentDate;`
+                `WITH RECURSIVE dates(d) AS (
+                VALUES(date('now', @numberOfDays))
+                UNION ALL
+                SELECT date(d, '+1 day')
+                FROM dates
+                WHERE d < date('now')
             )
-            .all({ numberOfDays: numberOfDays });
+            SELECT d as spentDate, COALESCE(SUM(e.amount), 0) as total FROM dates
+            LEFT JOIN expenses as e ON date(e.spentDate) = d
+            GROUP BY d;`
+            )
+            .all({ numberOfDays: `-${numberOfDays - 1} day` });
     }
 }
