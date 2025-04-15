@@ -1,4 +1,4 @@
-import { CategorySum } from '../dtos/statistic';
+import { CategorySum, DayExpenseSum } from '../dtos/statistic';
 import { DatabaseRepository } from '../repository/database';
 
 export class StatisticService {
@@ -24,5 +24,26 @@ export class StatisticService {
             )
             .pluck()
             .get();
+    }
+
+    /**
+     * Get expense summary by each period
+     * @param period sum of expense by period
+     */
+    public getSumExpenseByPeriod(numberOfDays: number = 30): DayExpenseSum[] {
+        return this.databaseRepository
+            .prepare(
+                `WITH RECURSIVE dates(d) AS (
+                VALUES(date('now', @numberOfDays))
+                UNION ALL
+                SELECT date(d, '+1 day')
+                FROM dates
+                WHERE d < date('now')
+            )
+            SELECT d as spentDate, COALESCE(SUM(e.amount), 0) as total FROM dates
+            LEFT JOIN expenses as e ON date(e.spentDate) = d
+            GROUP BY d;`
+            )
+            .all({ numberOfDays: `-${numberOfDays - 1} day` });
     }
 }

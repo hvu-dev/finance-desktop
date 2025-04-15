@@ -23,4 +23,8 @@ contextBridge.exposeInMainWorld('categoryService', {
 contextBridge.exposeInMainWorld('statisticService', {
     getSumByExpense: () => ipcRenderer.invoke('getSumByExpense'),
     getSumByCategory: () => ipcRenderer.invoke('getSumByCategory'),
+    // @ts-ignore
+    getSumExpenseByPeriod: (data) => {
+        return ipcRenderer.invoke('getSumExpenseByPeriod', data);
+    },
 });
