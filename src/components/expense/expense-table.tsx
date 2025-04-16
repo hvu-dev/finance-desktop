@@ -8,10 +8,13 @@ import {
     TableProps,
     Tag,
 } from 'antd';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Expense } from 'src/database/dtos/expense';
 import dayjs from 'dayjs';
 import { DATE_FORMAT } from '../const';
 
+// TODO: add color to categories table
+// Allow user to config this
 const COLOR_TAGS_MAP = {
     food: 'volcano',
     accomodation: 'geekblue',
@@ -52,6 +55,9 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({
             title: 'Amount',
             dataIndex: 'amount',
             key: 'amount',
+            render: (value) => {
+                return value.toLocaleString();
+            },
         },
         {
             title: 'Spent Date',
@@ -80,13 +86,15 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({
         {
             title: 'Action',
             key: 'action',
+            width: '15%',
             render: (_, record) => (
                 <Space size='middle'>
                     <Button
                         onClick={() => onUpdateButtonClick(record)}
                         color='primary'
-                        variant='outlined'>
-                        Update
+                        variant='outlined'
+                        title='Update expense'>
+                        <EditOutlined />
                     </Button>
                     <Popconfirm
                         title='Delete the task'
@@ -94,8 +102,11 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({
                         okText='Yes'
                         cancelText='No'
                         onConfirm={() => onDeleteButtonClick(record)}>
-                        <Button color='danger' variant='outlined'>
-                            Delete
+                        <Button
+                            color='danger'
+                            variant='outlined'
+                            title='Delete expense'>
+                            <DeleteOutlined />
                         </Button>
                     </Popconfirm>
                 </Space>
@@ -111,6 +122,7 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({
                 dataSource={data}
                 rowKey={'id'}
                 pagination={false}
+                bordered
             />
             <Pagination
                 align='end'
