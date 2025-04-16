@@ -24,7 +24,7 @@ ChartJS.register(
     Legend
 );
 
-export type StatisticsComponentProps = {};
+export type StatisticComponentProps = {};
 
 export const options = {
     responsive: true,
@@ -41,7 +41,7 @@ type ChartData = {
     }[];
 };
 
-const StatisticsComponent: React.FC<StatisticsComponentProps> = ({}) => {
+const StatisticComponent: React.FC<StatisticComponentProps> = ({}) => {
     const [sumByCategory, setSumByCategory] = useState<ChartData>(null);
     const [spendingTrend, setSpendingTrend] = useState<ChartData>(null);
 
@@ -115,31 +115,41 @@ const StatisticsComponent: React.FC<StatisticsComponentProps> = ({}) => {
 
     return (
         <>
-            <Row>
-                <Col span={16}>
-                    <Card
-                        style={{ width: '100%' }}
-                        // TODO: make this number configurable
-                        title='Current 7 days spending'>
-                        {spendingTrend && (
-                            <Line options={options} data={spendingTrend}></Line>
-                        )}
-                    </Card>
+            <Row gutter={[16, 16]}>
+                <Col span={24}>
+                    <Row gutter={16}>
+                        <Col span={16}>
+                            <Card
+                                style={{ width: '100%' }}
+                                // TODO: make this number configurable
+                                title='Current 7 days spending'>
+                                {spendingTrend && (
+                                    <Line
+                                        options={options}
+                                        data={spendingTrend}></Line>
+                                )}
+                            </Card>
+                        </Col>
+                        <Col span={8}>
+                            <Card
+                                style={{ width: '100%', height: '100%' }}
+                                title='All-time expense breakdown'>
+                                {sumByCategory && (
+                                    <Doughnut data={sumByCategory} />
+                                )}
+                            </Card>
+                        </Col>
+                    </Row>
                 </Col>
-                <Col span={8}>
-                    <Card
-                        style={{ width: '100%', height: '100%' }}
-                        title='All-time expense breakdown'>
-                        {sumByCategory && <Doughnut data={sumByCategory} />}
-                    </Card>
+                <Col span={24}>
+                    <Row gutter={16}>
+                        <Col span={12}>Budget</Col>
+                        <Col span={12}>Your Goals</Col>
+                    </Row>
                 </Col>
-            </Row>
-            <Row>
-                <Col span={12}>Budget</Col>
-                <Col span={12}>Your Goals</Col>
             </Row>
         </>
     );
 };
 
-export default StatisticsComponent;
+export default StatisticComponent;

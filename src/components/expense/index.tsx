@@ -1,4 +1,4 @@
-import React, { CSSProperties, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Button,
     Card,
@@ -12,6 +12,7 @@ import {
     Row,
     Select,
 } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import ExpenseTable from './expense-table';
 import {
     CreateExpenseDto,
@@ -246,142 +247,148 @@ const ExpenseComponent: React.FC = () => {
 
     return (
         <>
-            <div>
-                <Row justify='space-evenly'>
-                    <Col span={12}>
-                        <Card
-                            title='Total amount spent'
-                            style={{
-                                textAlign: 'center',
-                            }}>
-                            {sumByExpense}
-                        </Card>
-                    </Col>
-                    <Col span={12}>
-                        <Card
-                            title='Most spent category'
-                            style={{
-                                textAlign: 'center',
-                            }}>
-                            {sumByCategory.length > 0
-                                ? sumByCategory[0].name
-                                : 'None'}
-                        </Card>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col span={24}>
-                        <Flex gap='small' align='center' justify='flex-end'>
-                            <Button>Export to Excel</Button>
-                            <Button
-                                color='primary'
-                                variant='solid'
-                                onClick={() =>
+            <Row gutter={[16, 16]}>
+                <Col span={24}>
+                    <Row justify='space-evenly' gutter={16}>
+                        <Col span={12}>
+                            <Card
+                                title='Total amount spent'
+                                style={{
+                                    textAlign: 'center',
+                                }}>
+                                {sumByExpense}
+                            </Card>
+                        </Col>
+                        <Col span={12}>
+                            <Card
+                                title='Most spent category'
+                                style={{
+                                    textAlign: 'center',
+                                }}>
+                                {sumByCategory.length > 0
+                                    ? sumByCategory[0].name
+                                    : 'None'}
+                            </Card>
+                        </Col>
+                    </Row>
+                </Col>
+                <Col span={24}>
+                    <Row>
+                        <Col span={24}>
+                            <Flex gap='small' align='center' justify='flex-end'>
+                                <Button>Export to Excel</Button>
+                                <Button
+                                    color='primary'
+                                    variant='solid'
+                                    onClick={() =>
+                                        toggleExpenseModalVisibility(
+                                            null,
+                                            ExpenseModalMode.CREATE
+                                        )
+                                    }>
+                                    Create new <PlusOutlined />
+                                </Button>
+                            </Flex>
+                        </Col>
+                    </Row>
+                </Col>
+                <Col span={24}>
+                    <Row>
+                        <Col span={24}>
+                            <ExpenseTable
+                                data={displayExpenses}
+                                isLoading={isLoading}
+                                onDeleteButtonClick={handleDeleteButtonClick}
+                                onChangePage={handlePageChangeButtonClick}
+                                onUpdateButtonClick={handleUpdateButtonClick}
+                                onTitleClick={(record: Expense) =>
                                     toggleExpenseModalVisibility(
-                                        null,
-                                        ExpenseModalMode.CREATE
+                                        record,
+                                        ExpenseModalMode.VIEW
                                     )
-                                }>
-                                Create new
-                            </Button>
-                        </Flex>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col span={24}>
-                        <ExpenseTable
-                            data={displayExpenses}
-                            isLoading={isLoading}
-                            onDeleteButtonClick={handleDeleteButtonClick}
-                            onChangePage={handlePageChangeButtonClick}
-                            onUpdateButtonClick={handleUpdateButtonClick}
-                            onTitleClick={(record: Expense) =>
-                                toggleExpenseModalVisibility(
-                                    record,
-                                    ExpenseModalMode.VIEW
-                                )
-                            }
-                            pageSize={expenseTableConfig.pageSize}
-                            totalSize={expensesCount}></ExpenseTable>
-                    </Col>
-                </Row>
-                {isUpdateModalVisible && (
-                    <Modal
-                        title={`${modalExpenseText} Expense`}
-                        open={isUpdateModalVisible}
-                        onOk={() => {
-                            handleExpenseOkButtonClick(selectedExpense);
+                                }
+                                pageSize={expenseTableConfig.pageSize}
+                                totalSize={expensesCount}></ExpenseTable>
+                        </Col>
+                    </Row>
+                </Col>
+            </Row>
+            {isUpdateModalVisible && (
+                <Modal
+                    title={`${modalExpenseText} Expense`}
+                    open={isUpdateModalVisible}
+                    onOk={() => {
+                        handleExpenseOkButtonClick(selectedExpense);
+                    }}
+                    onCancel={() => setIsExpenseModalVisible(false)}
+                    okButtonProps={{
+                        style: {
+                            display: updateFormDisabled && 'none',
+                        },
+                        loading: isUpdateModalLoading,
+                    }}
+                    okText={modalExpenseText}>
+                    <Form
+                        form={form}
+                        labelCol={{ span: 6 }}
+                        wrapperCol={{ span: 18 }}
+                        layout='horizontal'
+                        variant={'filled'}
+                        style={{ maxWidth: 600 }}
+                        initialValues={{
+                            variant: 'filled',
                         }}
-                        onCancel={() => setIsExpenseModalVisible(false)}
-                        okButtonProps={{
-                            style: {
-                                display: updateFormDisabled && 'none',
-                            },
-                            loading: isUpdateModalLoading,
-                        }}
-                        okText={modalExpenseText}>
-                        <Form
-                            form={form}
-                            labelCol={{ span: 6 }}
-                            wrapperCol={{ span: 18 }}
-                            layout='horizontal'
-                            variant={'filled'}
-                            style={{ maxWidth: 600 }}
-                            initialValues={{
-                                variant: 'filled',
-                            }}
-                            disabled={updateFormDisabled}>
-                            <Form.Item
-                                label='Title'
-                                name='title'
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Title is required',
-                                    },
-                                ]}>
-                                <Input />
-                            </Form.Item>
-                            <Form.Item
-                                label='Amount'
-                                name='amount'
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Amount is required',
-                                    },
-                                ]}>
-                                <InputNumber style={{ width: '100%' }} />
-                            </Form.Item>
-                            <Form.Item
-                                label='Category'
-                                name='category'
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Category is required',
-                                    },
-                                ]}>
-                                <Select options={categories} key={'id'} />
-                            </Form.Item>
-                            <Form.Item
-                                label='Date spent'
-                                name='spentDate'
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Date spent is required',
-                                    },
-                                ]}>
-                                <DatePicker />
-                            </Form.Item>
-                            <Form.Item label='Note' name='note'>
-                                <Input.TextArea />
-                            </Form.Item>
-                        </Form>
-                    </Modal>
-                )}
-            </div>
+                        disabled={updateFormDisabled}>
+                        <Form.Item
+                            label='Title'
+                            name='title'
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Title is required',
+                                },
+                            ]}>
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label='Amount'
+                            name='amount'
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Amount is required',
+                                },
+                            ]}>
+                            <InputNumber style={{ width: '100%' }} />
+                        </Form.Item>
+                        <Form.Item
+                            label='Category'
+                            name='category'
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Category is required',
+                                },
+                            ]}>
+                            <Select options={categories} key={'id'} />
+                        </Form.Item>
+                        <Form.Item
+                            label='Date spent'
+                            name='spentDate'
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Date spent is required',
+                                },
+                            ]}>
+                            <DatePicker />
+                        </Form.Item>
+                        <Form.Item label='Note' name='note'>
+                            <Input.TextArea />
+                        </Form.Item>
+                    </Form>
+                </Modal>
+            )}
         </>
     );
 };
