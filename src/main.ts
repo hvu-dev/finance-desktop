@@ -46,8 +46,7 @@ const createWindow = () => {
     if (DEBUG) mainWindow.webContents.openDevTools();
 };
 
-const initializeHandlers = () => {
-    const factory = new ServiceFactory();
+const initializeHandlers = (factory: ServiceFactory) => {
     const expenseService = factory.createExpenseService();
     const categoryService = factory.createCategoryService();
     const statisticService = factory.createStatisticService();
@@ -92,7 +91,10 @@ const initializeHandlers = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-    initializeHandlers();
+    const factory = new ServiceFactory();
+
+    factory.createMigrationService().migrate();
+    initializeHandlers(factory);
     createWindow();
 });
 
