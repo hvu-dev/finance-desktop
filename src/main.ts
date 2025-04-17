@@ -92,7 +92,7 @@ const initializeHandlers = (factory: ServiceFactory) => {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
     const factory = new ServiceFactory();
-
+    // TODO: need settings file
     factory.createMigrationService().migrate();
     initializeHandlers(factory);
     createWindow();
