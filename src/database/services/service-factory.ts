@@ -1,5 +1,6 @@
 import { CategoryAdapter } from '../adapters/category';
 import { ExpenseAdapter } from '../adapters/expense';
+import DatabaseMigrator from '../migrations/migrator';
 import { DatabaseRepository } from '../repository/database';
 import { CategoryService } from './category-service';
 import { ExpenseService } from './expense-service';
@@ -28,6 +29,10 @@ class ServiceFactory {
 
     public createStatisticService(): StatisticService {
         return new StatisticService(this.databaseRepository);
+    }
+
+    public createMigrationService(): DatabaseMigrator {
+        return new DatabaseMigrator(new DatabaseRepository('test.db'));
     }
 }
 
