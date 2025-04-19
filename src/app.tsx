@@ -11,7 +11,7 @@ import {
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { ConfigProvider, Layout, Menu, theme } from 'antd';
-import { BrowserRouter, Route, Routes, Link } from 'react-router';
+import { BrowserRouter, Route, Routes, Link, HashRouter } from 'react-router';
 
 // Components
 import ExpenseComponent from './components/expense';
@@ -59,7 +59,7 @@ const App: React.FC = () => {
     } = theme.useToken();
 
     return (
-        <BrowserRouter>
+        <HashRouter>
             <ConfigProvider
                 theme={{
                     algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
@@ -82,8 +82,9 @@ const App: React.FC = () => {
                         <Content>
                             <Routes>
                                 <Route
-                                    path='/'
+                                    path='/home'
                                     element={<ExpenseComponent />}
+                                    index
                                 />
                                 <Route
                                     path='/statistic'
@@ -102,7 +103,7 @@ const App: React.FC = () => {
                     </Layout>
                 </Layout>
             </ConfigProvider>
-        </BrowserRouter>
+        </HashRouter>
     );
 };
 
