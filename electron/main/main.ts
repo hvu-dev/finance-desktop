@@ -44,7 +44,7 @@ const createWindow = () => {
 app.whenReady().then(() => {
     const factory = new ServiceFactory(app);
     // TODO: need settings file
-    // initializeDatabase(factory);
+    initializeDatabase(factory);
     initializeHandlers(factory);
 
     createWindow();

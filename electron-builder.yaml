@@ -1,0 +1,26 @@
+appId: com.sleepydevblog.app
+productName: PersonalFinance
+directories:
+    buildResources: build
+files:
+    - 'dist'
+asarUnpack:
+    - resources/**
+win:
+    executableName: personal-finance
+nsis:
+    artifactName: ${name}-${version}-setup.${ext}
+    shortcutName: ${productName}
+    uninstallDisplayName: ${productName}
+    createDesktopShortcut: always
+mac:
+    entitlementsInherit: build/entitlements.mac.plist
+dmg:
+    artifactName: ${name}-${version}.${ext}
+linux:
+    target:
+        - AppImage
+        - snap
+        - deb
+    maintainer: electronjs.org
+    category: Utility

@@ -1,23 +1,23 @@
 {
-  "name": "finance-desktop",
-  "productName": "finance-desktop",
-  "version": "1.0.0",
-  "description": "My Electron application description",
-  "main": "./dist/main/index.js",
+  "name": "personal-finance-desktop",
+  "productName": "personal-finance-desktop",
+  "version": "0.1.0",
+  "description": "Manage your daily expense at ease",
+  "main": "dist/main/index.js",
   "scripts": {
-    "test": "jest",
-    "lint": "eslint --ext .ts,.tsx .",
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
     "prebuild": "electron-vite build",
     "rebuild": "electron-rebuild -f -w better-sqlite3",
+    "test": "jest",
+    "lint": "eslint --ext .ts,.tsx .",
     "postinstall": "npm run rebuild",
     "build": "electron-vite build",
-    "build:win": "npm run build && electron-builder --win --config",
-    "build:mac": "npm run build && electron-builder --mac --config",
-    "build:linux": "npm run build && electron-builder --linux --config"
+    "build:win": "npm run build && electron-builder --win --config electron-builder.yaml",
+    "build:mac": "npm run build && electron-builder --mac --config electron-builder.yaml",
+    "build:linux": "npm run build && electron-builder --linux --config electron-builder.yaml"
   },
-  "keywords": [],
+  "keywords": ["electronjs", "desktop", "application", "expense", "finance", "personal use"],
   "author": {
     "name": "Huy Vu",
     "email": "vuquanghuy2k@gmail.com"
