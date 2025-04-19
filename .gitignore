@@ -1,5 +1,7 @@
 .vscode
 *.db*
+dist/
+out/
 
 # Logs
 logs
