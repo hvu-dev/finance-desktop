@@ -6,7 +6,7 @@
   "main": "dist/main/index.js",
   "scripts": {
     "start": "electron-vite preview",
-    "dev": "electron-vite dev",
+    "dev": "electron-vite dev --watch",
     "prebuild": "electron-vite build",
     "rebuild": "electron-rebuild -f -w better-sqlite3",
     "test": "jest",
