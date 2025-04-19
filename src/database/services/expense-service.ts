@@ -86,4 +86,13 @@ export class ExpenseService {
             .run(data);
         return this.getById(data.id);
     }
+
+    public delete(id: number): void {
+        this.databaseRepository
+            .prepare(
+                `DELETE FROM expenses
+                WHERE id = @id;`
+            )
+            .run({ id: id });
+    }
 }

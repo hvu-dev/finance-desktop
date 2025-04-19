@@ -60,6 +60,10 @@ const initializeHandlers = (factory: ServiceFactory) => {
         return expenseService.create(data);
     });
 
+    ipcMain.handle('delete', (_, data) => {
+        return expenseService.delete(data);
+    });
+
     ipcMain.handle('getAllExpenses', (_, data) => {
         return expenseService.getAll(data);
     });
