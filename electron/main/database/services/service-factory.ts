@@ -7,6 +7,7 @@ import { DatabaseRepository } from '../repository/database';
 import { CategoryService } from './category-service';
 import { ExpenseService } from './expense-service';
 import { StatisticService } from './statistic-service';
+import { Migration0001, Migration0002 } from '../migrations/index';
 
 class ServiceFactory {
     private app: Electron.App;
@@ -38,7 +39,10 @@ class ServiceFactory {
     }
 
     public createMigrationService(): DatabaseMigrator {
-        return new DatabaseMigrator(this.databaseRepository);
+        const migrator = new DatabaseMigrator(this.databaseRepository);
+        migrator.addMigration(new Migration0001());
+        migrator.addMigration(new Migration0002());
+        return migrator;
     }
 }
 

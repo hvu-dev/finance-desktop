@@ -9,4 +9,7 @@ export const DEFAULT_CATEGORIES = [
     { value: 'travel', name: 'travel' },
     { value: 'gift', name: 'gift' },
     { value: 'utilities', name: 'utilities' },
+    { value: 'accessories', name: 'accessories' },
+    { value: 'parking', name: 'parking' },
+    { value: 'other', name: 'other' },
 ];

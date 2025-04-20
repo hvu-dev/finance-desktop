@@ -3,8 +3,8 @@ const Database = require('better-sqlite3');
 export class DatabaseRepository {
     private db;
 
-    constructor(private databaseName: string = './data.db') {
-        this.db = new Database(databaseName, {});
+    constructor(databasePath: string = './data.db') {
+        this.db = new Database(databasePath, {});
         this.db.pragma('journal_mode = WAL');
     }
 
