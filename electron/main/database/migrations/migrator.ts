@@ -7,7 +7,7 @@ export default class DatabaseMigrator {
     constructor(private databaseRepository: DatabaseRepository) {}
 
     public migrate(): void {
-        const basePath = 'src/database/migrations/sql/';
+        const basePath = 'electron/main/database/migrations/sql/';
         const filePaths: string[] = readdirSync(basePath, {
             encoding: 'utf-8',
         });

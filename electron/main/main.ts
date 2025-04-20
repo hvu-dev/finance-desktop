@@ -30,10 +30,16 @@ const createWindow = () => {
         },
     });
 
-    mainWindow.loadFile(path.join(__dirname, '..', '/renderer/index.html'), {
-        hash: 'home',
-    });
-
+    if (!app.isPackaged && process.env['ELECTRON_RENDERER_URL']) {
+        mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
+    } else {
+        mainWindow.loadFile(
+            path.join(__dirname, '..', '/renderer/index.html'),
+            {
+                hash: 'home',
+            }
+        );
+    }
     // Open the DevTools.
     if (DEBUG) mainWindow.webContents.openDevTools();
 };
