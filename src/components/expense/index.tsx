@@ -123,7 +123,6 @@ const ExpenseComponent: React.FC = () => {
                         (currentPage - 1) * expenseTableConfig.pageSize,
                         currentPage * expenseTableConfig.pageSize
                     );
-                    console.log(currentPageExpenses);
 
                     setDisplayExpenses(
                         data.slice(
@@ -131,6 +130,18 @@ const ExpenseComponent: React.FC = () => {
                             currentPage * expenseTableConfig.pageSize
                         )
                     );
+
+                    if (expensesCount % expenseTableConfig.pageSize === 0) {
+                        // new expense will create a new page
+                        // we need to update the loadPages to +1
+                        setLoadedPages((prevLoadedPages) => {
+                            prevLoadedPages.push(
+                                expensesCount / expenseTableConfig.pageSize + 2
+                            );
+                            return prevLoadedPages;
+                        });
+                    }
+
                     setExpensesCount((prevCount) => prevCount + 1);
                     return data;
                 });
@@ -177,13 +188,13 @@ const ExpenseComponent: React.FC = () => {
                     currentPage * expenseTableConfig.pageSize
                 );
                 if (currentPageExpenses.length === 0) {
-                    setCurrentPage((prevPage) => prevPage - 1);
                     setDisplayExpenses(
                         newExpenses.slice(
                             (currentPage - 2) * expenseTableConfig.pageSize,
                             (currentPage - 1) * expenseTableConfig.pageSize
                         )
                     );
+                    setCurrentPage((prevPage) => prevPage - 1);
                 } else {
                     setDisplayExpenses(currentPageExpenses);
                 }
