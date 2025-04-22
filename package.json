@@ -5,8 +5,8 @@
   "description": "Manage your daily expense at ease",
   "main": "dist/main/index.js",
   "scripts": {
-    "start": "electron-vite preview",
-    "dev": "electron-vite dev --watch",
+    "start": "electron-vite dev --watch",
+    "preview": "electron-vite preview",
     "prebuild": "electron-vite build",
     "rebuild": "electron-rebuild -f -w better-sqlite3",
     "test": "jest",

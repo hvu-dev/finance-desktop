@@ -118,12 +118,31 @@ const ExpenseComponent: React.FC = () => {
                     const data = [...prevExpenses, newExpense].sort((a, b) =>
                         a.spentDate >= b.spentDate ? -1 : 1
                     );
+
+                    const currentPageExpenses = data.slice(
+                        (currentPage - 1) * expenseTableConfig.pageSize,
+                        currentPage * expenseTableConfig.pageSize
+                    );
+
                     setDisplayExpenses(
                         data.slice(
                             (currentPage - 1) * expenseTableConfig.pageSize,
                             currentPage * expenseTableConfig.pageSize
                         )
                     );
+
+                    if (expensesCount % expenseTableConfig.pageSize === 0) {
+                        // new expense will create a new page
+                        // we need to update the loadPages to +1
+                        setLoadedPages((prevLoadedPages) => {
+                            prevLoadedPages.push(
+                                expensesCount / expenseTableConfig.pageSize + 2
+                            );
+                            return prevLoadedPages;
+                        });
+                    }
+
+                    setExpensesCount((prevCount) => prevCount + 1);
                     return data;
                 });
             });
@@ -156,7 +175,36 @@ const ExpenseComponent: React.FC = () => {
         toggleExpenseModalVisibility(record, ExpenseModalMode.UPDATE);
     };
 
-    const handleDeleteButtonClick = (record: Expense) => {};
+    const handleDeleteButtonClick = (record: Expense) => {
+        setIsLoading(true);
+        // @ts-ignore
+        window.expenseService.delete(record.id).then(() => {
+            setExpenses((prevExpense) => {
+                const newExpenses = prevExpense.filter(
+                    (expense) => expense.id != record.id
+                );
+                const currentPageExpenses = newExpenses.slice(
+                    (currentPage - 1) * expenseTableConfig.pageSize,
+                    currentPage * expenseTableConfig.pageSize
+                );
+                if (currentPageExpenses.length === 0) {
+                    setDisplayExpenses(
+                        newExpenses.slice(
+                            (currentPage - 2) * expenseTableConfig.pageSize,
+                            (currentPage - 1) * expenseTableConfig.pageSize
+                        )
+                    );
+                    setCurrentPage((prevPage) => prevPage - 1);
+                } else {
+                    setDisplayExpenses(currentPageExpenses);
+                }
+                setExpensesCount((prevCount) => prevCount - 1);
+                return newExpenses;
+            });
+
+            setIsLoading(false);
+        });
+    };
 
     const handleExpenseOkButtonClick = (record: Expense) => {
         setIsUpdateModalLoading(true);
