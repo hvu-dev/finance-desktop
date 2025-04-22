@@ -1,33 +1,10 @@
-import { DEFAULT_CATEGORIES } from './const';
+import { DatabaseRepository } from '../../repository/database';
+import { DEFAULT_CATEGORIES } from '../const';
+import { Migration } from '../migrator';
 
-import { DatabaseRepository } from '../repository/database';
-import { readFileSync, readdirSync } from 'fs';
-
-export default class DatabaseMigrator {
-    constructor(private databaseRepository: DatabaseRepository) {}
-
-    public migrate(): void {
-        const basePath = 'src/database/migrations/sql/';
-        const filePaths: string[] = readdirSync(basePath, {
-            encoding: 'utf-8',
-        });
-        for (const path of filePaths) {
-            this.databaseRepository.execute(
-                readFileSync(basePath + path, { encoding: 'utf-8' })
-            );
-        }
-    }
-
-    public createMockData(): void {
-        this.createCategories();
-
-        if ((process.env.IS_DEV || 'false').toLowerCase() === 'true') {
-            this.createExpenses();
-        }
-    }
-
-    private createCategories(): void {
-        const categoryInsertStmt = this.databaseRepository.prepare(
+export class Migration0002 implements Migration {
+    public createCategories(databaseRepository: DatabaseRepository): void {
+        const categoryInsertStmt = databaseRepository.prepare(
             'INSERT OR IGNORE INTO categories (value, name) VALUES (@value, @name)'
         );
         for (const category of DEFAULT_CATEGORIES) {
@@ -35,8 +12,8 @@ export default class DatabaseMigrator {
         }
     }
 
-    private createExpenses(): void {
-        const expenseInsertStmt = this.databaseRepository.prepare(
+    public createExpenses(databaseRepository: DatabaseRepository): void {
+        const expenseInsertStmt = databaseRepository.prepare(
             `INSERT INTO expenses (title, amount, spentDate, note, categoryId) 
             VALUES (@title, @amount, @spentDate, @note, @categoryId)`
         );
@@ -79,5 +56,19 @@ export default class DatabaseMigrator {
         ]) {
             expenseInsertStmt.run(expense);
         }
+    }
+
+    upgrade(databaseRepository: DatabaseRepository): void {
+        this.createCategories(databaseRepository);
+        if (process.env['DEBUG']) {
+            this.createExpenses(databaseRepository);
+        }
+    }
+
+    downgrade(databaseRepository: DatabaseRepository): void {
+        databaseRepository.execute(
+            `DELETE FROM expenses;
+            DELETE FROM categories;`
+        );
     }
 }

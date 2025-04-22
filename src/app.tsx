@@ -11,7 +11,7 @@ import {
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { ConfigProvider, Layout, Menu, theme } from 'antd';
-import { BrowserRouter, Route, Routes, Link } from 'react-router';
+import { Route, Routes, Link, HashRouter, Navigate } from 'react-router';
 
 // Components
 import ExpenseComponent from './components/expense';
@@ -47,7 +47,7 @@ function getItem(
 }
 
 const items: MenuItem[] = [
-    getItem(<Link to='/'>Expenses</Link>, '1', <BookOutlined />),
+    getItem(<Link to='/home'>Expenses</Link>, '1', <BookOutlined />),
     getItem(<Link to='/statistic'>Statistics</Link>, '2', <PieChartOutlined />),
     getItem(<Link to='/setting'>Settings</Link>, '3', <SettingOutlined />),
 ];
@@ -59,7 +59,7 @@ const App: React.FC = () => {
     } = theme.useToken();
 
     return (
-        <BrowserRouter>
+        <HashRouter>
             <ConfigProvider
                 theme={{
                     algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
@@ -82,8 +82,9 @@ const App: React.FC = () => {
                         <Content>
                             <Routes>
                                 <Route
-                                    path='/'
+                                    path='/home'
                                     element={<ExpenseComponent />}
+                                    index
                                 />
                                 <Route
                                     path='/statistic'
@@ -92,6 +93,10 @@ const App: React.FC = () => {
                                 <Route
                                     path='/setting'
                                     element={<SettingComponent />}
+                                />
+                                <Route
+                                    path='*'
+                                    element={<Navigate to='/home' replace />}
                                 />
                             </Routes>
                         </Content>
@@ -102,7 +107,7 @@ const App: React.FC = () => {
                     </Layout>
                 </Layout>
             </ConfigProvider>
-        </BrowserRouter>
+        </HashRouter>
     );
 };
 
