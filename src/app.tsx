@@ -2,7 +2,7 @@ import { createRoot } from 'react-dom/client';
 
 const root = createRoot(document.getElementById('root'));
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './index.css';
 import {
     BookOutlined,
@@ -21,16 +21,6 @@ import SettingComponent from './components/setting';
 const { Content, Footer, Sider } = Layout;
 
 type MenuItem = Required<MenuProps>['items'][number];
-const siderStyle: React.CSSProperties = {
-    overflow: 'auto',
-    height: '100vh',
-    position: 'sticky',
-    insetInlineStart: 0,
-    top: 0,
-    bottom: 0,
-    scrollbarWidth: 'thin',
-    scrollbarGutter: 'stable',
-};
 
 function getItem(
     label: React.ReactNode,
@@ -53,11 +43,14 @@ const items: MenuItem[] = [
 ];
 
 const App: React.FC = () => {
-    const [collapsed, setCollapsed] = useState(false);
-    const {
-        token: { colorBgContainer, borderRadiusLG },
-    } = theme.useToken();
+    const [collapsed, setCollapsed] = useState<boolean>(false);
 
+    useEffect(() => {
+        // @ts-ignore
+        window.settingService
+            .getSettings()
+            .then((setting) => console.log(setting));
+    }, []);
     return (
         <HashRouter>
             <ConfigProvider
@@ -66,11 +59,9 @@ const App: React.FC = () => {
                 }}>
                 <Layout style={{ minHeight: '100vh' }}>
                     <Sider
-                        style={siderStyle}
                         collapsible
                         collapsed={collapsed}
                         onCollapse={(value) => setCollapsed(value)}>
-                        <div className='demo-logo-vertical' />
                         <Menu
                             theme='dark'
                             defaultSelectedKeys={['1']}

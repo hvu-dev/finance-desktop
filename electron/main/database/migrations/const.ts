@@ -13,3 +13,8 @@ export const DEFAULT_CATEGORIES = [
     { value: 'parking', name: 'parking' },
     { value: 'other', name: 'other' },
 ];
+
+export const DEFAULT_SETTINGS = [
+    { key: 'theme', value: 'dark' },
+    { key: 'font-size', value: '16' },
+];
