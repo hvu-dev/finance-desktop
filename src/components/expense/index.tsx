@@ -304,7 +304,7 @@ const ExpenseComponent: React.FC = () => {
                                 style={{
                                     textAlign: 'center',
                                 }}>
-                                {sumByExpense}
+                                {sumByExpense || 0}
                             </Card>
                         </Col>
                         <Col span={12}>
