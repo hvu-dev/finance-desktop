@@ -11,6 +11,7 @@ import {
     Modal,
     Row,
     Select,
+    Statistic,
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import ExpenseTable from './expense-table';
@@ -300,22 +301,30 @@ const ExpenseComponent: React.FC = () => {
                     <Row justify='space-evenly' gutter={16}>
                         <Col span={12}>
                             <Card
-                                title='Total amount spent'
+                                variant='borderless'
                                 style={{
                                     textAlign: 'center',
                                 }}>
-                                {sumByExpense || 0}
+                                <Statistic
+                                    title='Total amount spent'
+                                    value={sumByExpense || 0}
+                                />
                             </Card>
                         </Col>
                         <Col span={12}>
                             <Card
-                                title='Most spent category'
+                                variant='borderless'
                                 style={{
                                     textAlign: 'center',
                                 }}>
-                                {sumByCategory.length > 0
-                                    ? sumByCategory[0].name
-                                    : 'None'}
+                                <Statistic
+                                    title='Most spent category'
+                                    value={
+                                        sumByCategory.length > 0
+                                            ? sumByCategory[0].name
+                                            : 'None'
+                                    }
+                                />
                             </Card>
                         </Col>
                     </Row>
