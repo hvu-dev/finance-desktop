@@ -5,6 +5,7 @@ const root = createRoot(document.getElementById('root'));
 import React, { useState } from 'react';
 import './index.css';
 import {
+    BankOutlined,
     BookOutlined,
     PieChartOutlined,
     SettingOutlined,
@@ -17,6 +18,7 @@ import { Route, Routes, Link, HashRouter, Navigate } from 'react-router';
 import ExpenseComponent from './components/expense';
 import StatisticComponent from './components/statistic';
 import SettingComponent from './components/setting';
+import BudgetComponent from './components/budget';
 
 const { Content, Footer, Sider } = Layout;
 
@@ -48,8 +50,9 @@ function getItem(
 
 const items: MenuItem[] = [
     getItem(<Link to='/home'>Expenses</Link>, '1', <BookOutlined />),
-    getItem(<Link to='/statistic'>Statistics</Link>, '2', <PieChartOutlined />),
-    getItem(<Link to='/setting'>Settings</Link>, '3', <SettingOutlined />),
+    getItem(<Link to='/budget'>Budgets</Link>, '2', <BankOutlined />),
+    getItem(<Link to='/statistic'>Statistics</Link>, '3', <PieChartOutlined />),
+    getItem(<Link to='/setting'>Settings</Link>, '4', <SettingOutlined />),
 ];
 
 const App: React.FC = () => {
@@ -85,6 +88,10 @@ const App: React.FC = () => {
                                     path='/home'
                                     element={<ExpenseComponent />}
                                     index
+                                />
+                                <Route
+                                    path='/budget'
+                                    element={<BudgetComponent />}
                                 />
                                 <Route
                                     path='/statistic'

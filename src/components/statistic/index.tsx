@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Col, Row } from 'antd';
+import { Button, Card, Col, Result, Row } from 'antd';
 import { Doughnut, Line } from 'react-chartjs-2';
 import {
     Chart as ChartJS,
@@ -12,6 +12,7 @@ import {
     Legend,
     ArcElement,
 } from 'chart.js';
+import { useNavigate } from 'react-router';
 
 ChartJS.register(
     ArcElement,
@@ -42,33 +43,43 @@ type ChartData = {
 };
 
 const StatisticComponent: React.FC<StatisticComponentProps> = ({}) => {
+    const navigate = useNavigate();
+
     const [sumByCategory, setSumByCategory] = useState<ChartData>(null);
     const [spendingTrend, setSpendingTrend] = useState<ChartData>(null);
+    const [expenseCount, setExpenseCount] = useState<number>(0);
 
     useEffect(() => {
-        Promise.all([
-            // @ts-ignore
-            window.statisticService.getSumByCategory(),
-            // @ts-ignore
-            // TODO: make this configurable
-            window.statisticService.getSumExpenseByPeriod(7),
-        ]).then((data) => {
-            setSumByCategory(() =>
-                transformReportData(
-                    data[0],
-                    'Expense Break Down',
-                    'name',
-                    'total'
-                )
-            );
-            setSpendingTrend(() =>
-                transformReportData(
-                    data[1],
-                    'Spending Trend',
-                    'spentDate',
-                    'total'
-                )
-            );
+        // @ts-ignore
+        window.expenseService.countAllExpenses().then((numberOfExpenses) => {
+            if (numberOfExpenses > 0) {
+                Promise.all([
+                    // @ts-ignore
+                    window.statisticService.getSumByCategory(),
+                    // @ts-ignore
+                    // TODO: make this configurable
+                    window.statisticService.getSumExpenseByPeriod(7),
+                ]).then((data) => {
+                    setSumByCategory(() =>
+                        transformReportData(
+                            data[0],
+                            'Expense Break Down',
+                            'name',
+                            'total'
+                        )
+                    );
+                    setSpendingTrend(() =>
+                        transformReportData(
+                            data[1],
+                            'Spending Trend',
+                            'spentDate',
+                            'total'
+                        )
+                    );
+                });
+            }
+
+            setExpenseCount(numberOfExpenses);
         });
     }, []);
 
@@ -115,39 +126,53 @@ const StatisticComponent: React.FC<StatisticComponentProps> = ({}) => {
 
     return (
         <>
-            <Row gutter={[16, 16]}>
-                <Col span={24}>
-                    <Row gutter={16}>
-                        <Col span={16}>
-                            <Card
-                                style={{ width: '100%' }}
-                                // TODO: make this number configurable
-                                title='Current 7 days spending'>
-                                {spendingTrend && (
-                                    <Line
-                                        options={options}
-                                        data={spendingTrend}></Line>
-                                )}
-                            </Card>
-                        </Col>
-                        <Col span={8}>
-                            <Card
-                                style={{ width: '100%', height: '100%' }}
-                                title='All-time expense breakdown'>
-                                {sumByCategory && (
-                                    <Doughnut data={sumByCategory} />
-                                )}
-                            </Card>
-                        </Col>
-                    </Row>
-                </Col>
-                <Col span={24}>
-                    <Row gutter={16}>
-                        <Col span={12}>Budget</Col>
-                        <Col span={12}>Your Goals</Col>
-                    </Row>
-                </Col>
-            </Row>
+            {expenseCount === 0 ? (
+                <Result
+                    status='404'
+                    title='There are no expenses to compute'
+                    extra={
+                        <Button
+                            type='primary'
+                            onClick={() => navigate('/home')}>
+                            Go to Expenses
+                        </Button>
+                    }
+                />
+            ) : (
+                <Row gutter={[16, 16]}>
+                    <Col span={24}>
+                        <Row gutter={16}>
+                            <Col span={16}>
+                                <Card
+                                    style={{ width: '100%' }}
+                                    // TODO: make this number configurable
+                                    title='Current 7 days spending'>
+                                    {spendingTrend && (
+                                        <Line
+                                            options={options}
+                                            data={spendingTrend}></Line>
+                                    )}
+                                </Card>
+                            </Col>
+                            <Col span={8}>
+                                <Card
+                                    style={{ width: '100%', height: '100%' }}
+                                    title='All-time expense breakdown'>
+                                    {sumByCategory && (
+                                        <Doughnut data={sumByCategory} />
+                                    )}
+                                </Card>
+                            </Col>
+                        </Row>
+                    </Col>
+                    <Col span={24}>
+                        <Row gutter={16}>
+                            <Col span={12}>Budget</Col>
+                            <Col span={12}>Your Goals</Col>
+                        </Row>
+                    </Col>
+                </Row>
+            )}
         </>
     );
 };
