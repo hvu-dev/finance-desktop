@@ -8,6 +8,8 @@ import { CategoryService } from './category-service';
 import { ExpenseService } from './expense-service';
 import { StatisticService } from './statistic-service';
 import { Migration0001, Migration0002 } from '../migrations/index';
+import { IncomeService } from './income-service';
+import { IncomeAdapter } from '../adapters/income';
 
 class ServiceFactory {
     private app: Electron.App;
@@ -43,6 +45,10 @@ class ServiceFactory {
         migrator.addMigration(new Migration0001());
         migrator.addMigration(new Migration0002());
         return migrator;
+    }
+
+    public createIncomeService(): IncomeService {
+        return new IncomeService(this.databaseRepository, new IncomeAdapter());
     }
 }
 

@@ -32,3 +32,7 @@ contextBridge.exposeInMainWorld('statisticService', {
         return ipcRenderer.invoke('getSumExpenseByPeriod', data);
     },
 });
+
+contextBridge.exposeInMainWorld('incomeService', {
+    getAllIncomes: () => ipcRenderer.invoke('getAllIncomes'),
+});
