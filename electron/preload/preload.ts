@@ -24,6 +24,10 @@ contextBridge.exposeInMainWorld('categoryService', {
     getAllCategories: () => ipcRenderer.invoke('getAllCategories'),
 });
 
+contextBridge.exposeInMainWorld('settingService', {
+    getSettings: () => ipcRenderer.invoke('getSettings'),
+});
+
 contextBridge.exposeInMainWorld('statisticService', {
     getSumByExpense: () => ipcRenderer.invoke('getSumByExpense'),
     getSumByCategory: () => ipcRenderer.invoke('getSumByCategory'),

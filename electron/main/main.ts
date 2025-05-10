@@ -81,6 +81,7 @@ const initializeHandlers = (factory: ServiceFactory) => {
     const expenseService = factory.createExpenseService();
     const categoryService = factory.createCategoryService();
     const statisticService = factory.createStatisticService();
+    const settingService = factory.createSettingService();
 
     // Expense handlers
     ipcMain.handle('countAllExpenses', (): number => {
@@ -106,6 +107,11 @@ const initializeHandlers = (factory: ServiceFactory) => {
     // Category handlers
     ipcMain.handle('getAllCategories', () => {
         return categoryService.getAll();
+    });
+
+    // Setting handlers
+    ipcMain.handle('getSettings', () => {
+        return settingService.get();
     });
 
     // Statistic handlers

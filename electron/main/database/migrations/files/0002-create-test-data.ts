@@ -62,6 +62,7 @@ export class Migration0002 implements Migration {
         this.createCategories(databaseRepository);
         if (process.env['DEBUG']) {
             this.createExpenses(databaseRepository);
+            this.createExpenses(databaseRepository);
         }
     }
 
