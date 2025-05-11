@@ -1,5 +1,4 @@
 import { Adapter } from '../adapters/base';
-import { ServiceResponse } from '../dtos/common';
 import {
     CreateExpenseDto,
     Expense,

@@ -9,7 +9,7 @@ import {
     Tag,
 } from 'antd';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Expense } from 'src/database/dtos/expense';
+import { Expense } from 'electron/main/database/dtos/expense';
 import dayjs from 'dayjs';
 import { DATE_FORMAT } from '../const';
 

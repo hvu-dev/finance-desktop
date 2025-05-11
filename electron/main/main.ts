@@ -81,6 +81,7 @@ const initializeHandlers = (factory: ServiceFactory) => {
     const expenseService = factory.createExpenseService();
     const categoryService = factory.createCategoryService();
     const statisticService = factory.createStatisticService();
+    const incomeService = factory.createIncomeService();
 
     // Expense handlers
     ipcMain.handle('countAllExpenses', (): number => {
@@ -119,6 +120,11 @@ const initializeHandlers = (factory: ServiceFactory) => {
 
     ipcMain.handle('getSumExpenseByPeriod', (_, data) => {
         return statisticService.getSumExpenseByPeriod(data);
+    });
+
+    // Income handlers
+    ipcMain.handle('getAllIncomes', () => {
+        return incomeService.getAll();
     });
 };
 
