@@ -7,7 +7,11 @@ import { DatabaseRepository } from '../repository/database';
 import { CategoryService } from './category-service';
 import { ExpenseService } from './expense-service';
 import { StatisticService } from './statistic-service';
-import { Migration0001, Migration0002 } from '../migrations/index';
+import {
+    Migration0001,
+    Migration0002,
+    Migration0003,
+} from '../migrations/index';
 import { IncomeService } from './income-service';
 import { IncomeAdapter } from '../adapters/income';
 
@@ -44,6 +48,7 @@ class ServiceFactory {
         const migrator = new DatabaseMigrator(this.databaseRepository);
         migrator.addMigration(new Migration0001());
         migrator.addMigration(new Migration0002());
+        migrator.addMigration(new Migration0003());
         return migrator;
     }
 

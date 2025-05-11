@@ -7,12 +7,17 @@ export class IncomeAdapter implements Adapter<IncomeDBRow, Income> {
         return {
             id: data.id,
             amount: data.amount,
-            receivedDate: dayjs(data.receivedDate).toDate(),
+            receivedDate: data.receivedDate && dayjs(data.receivedDate).toDate(),
             note: data.note,
-            type: {
-                id: data.typeId,
-                name: data.typeName,
-                value: data.typeValue,
+            category: {
+                id: data.incomeCategoryId,
+                name: data.incomeCategoryName,
+                value: data.incomeCategoryValue,
+                period: {
+                    id: data.incomePeriodId,
+                    name: data.incomePeriodName,
+                    value: data.incomePeriodValue,
+                },
             },
         };
     }
