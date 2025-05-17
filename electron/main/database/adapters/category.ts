@@ -1,5 +1,5 @@
-import { Category, CategoryDBRow } from '../dtos/category';
-import { Adapter } from './base';
+import { Category, CategoryDBRow } from '@data/dtos/category';
+import { Adapter } from '@data/adapters/base';
 
 export class CategoryAdapter implements Adapter<CategoryDBRow, Category> {
     adapt(data: CategoryDBRow): Category {

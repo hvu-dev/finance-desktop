@@ -1,19 +1,21 @@
 import path from 'path';
 
-import { CategoryAdapter } from '../adapters/category';
-import { ExpenseAdapter } from '../adapters/expense';
-import DatabaseMigrator from '../migrations/migrator';
-import { DatabaseRepository } from '../repository/database';
-import { CategoryService } from './category-service';
-import { ExpenseService } from './expense-service';
-import { StatisticService } from './statistic-service';
+import { CategoryAdapter } from '@data/adapters/category';
+import { ExpenseAdapter } from '@data/adapters/expense';
+import { IncomeAdapter } from '@data/adapters/income';
+
+import { CategoryService } from '@data/services/category-service';
+import { DatabaseRepository } from '@data/repository/database';
+import { ExpenseService } from '@data/services/expense-service';
+import { IncomeService } from '@data/services/income-service';
+import { StatisticService } from '@data/services/statistic-service';
+
+import DatabaseMigrator from '@data/migrations/migrator';
 import {
     Migration0001,
     Migration0002,
     Migration0003,
-} from '../migrations/index';
-import { IncomeService } from './income-service';
-import { IncomeAdapter } from '../adapters/income';
+} from '@data/migrations/index';
 
 class ServiceFactory {
     private app: Electron.App;

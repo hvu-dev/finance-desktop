@@ -3,7 +3,9 @@ import { createRoot } from 'react-dom/client';
 const root = createRoot(document.getElementById('root'));
 
 import React, { useState } from 'react';
+
 import './index.css';
+
 import {
     BankOutlined,
     BookOutlined,
@@ -12,13 +14,14 @@ import {
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { ConfigProvider, Layout, Menu, theme } from 'antd';
+
 import { Route, Routes, Link, HashRouter, Navigate } from 'react-router';
 
 // Components
-import ExpenseComponent from './components/expense';
-import StatisticComponent from './components/statistic';
-import SettingComponent from './components/setting';
-import BudgetComponent from './components/budget';
+import ExpenseComponent from '@components/expense';
+import StatisticComponent from '@components/statistic';
+import SettingComponent from '@components/setting';
+import BudgetComponent from '@components/budget';
 
 const { Content, Footer, Sider } = Layout;
 

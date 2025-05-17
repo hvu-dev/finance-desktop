@@ -1,7 +1,7 @@
 import React from 'react';
 import { Col, Row, Tabs } from 'antd';
-import IncomeComponent from './income';
-import GoalComponent from './goal';
+import IncomeComponent from '@components/budget/income';
+import GoalComponent from '@components/budget/goal';
 
 type BudgetComponentProps = {};
 

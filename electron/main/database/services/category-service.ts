@@ -1,6 +1,6 @@
-import { Adapter } from '../adapters/base';
-import { Category, CategoryDBRow } from '../dtos/category';
-import { DatabaseRepository } from '../repository/database';
+import { Adapter } from '@data/adapters/base';
+import { Category, CategoryDBRow } from '@data/dtos/category';
+import { DatabaseRepository } from '@data/repository/database';
 
 export class CategoryService {
     constructor(

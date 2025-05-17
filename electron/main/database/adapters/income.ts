@@ -1,13 +1,14 @@
 import dayjs from 'dayjs';
-import { Income, IncomeDBRow } from '../dtos/income';
-import { Adapter } from './base';
+import { Income, IncomeDBRow } from '@data/dtos/income';
+import { Adapter } from '@data/adapters/base';
 
 export class IncomeAdapter implements Adapter<IncomeDBRow, Income> {
     adapt(data: IncomeDBRow): Income {
         return {
             id: data.id,
             amount: data.amount,
-            receivedDate: data.receivedDate && dayjs(data.receivedDate).toDate(),
+            receivedDate:
+                data.receivedDate && dayjs(data.receivedDate).toDate(),
             note: data.note,
             category: {
                 id: data.incomeCategoryId,

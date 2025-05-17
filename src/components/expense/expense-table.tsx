@@ -1,4 +1,5 @@
 import React from 'react';
+
 import {
     Button,
     Pagination,
@@ -9,9 +10,11 @@ import {
     Tag,
 } from 'antd';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Expense } from 'electron/main/database/dtos/expense';
+
 import dayjs from 'dayjs';
-import { DATE_FORMAT } from '../const';
+
+import { DATE_FORMAT } from '@components/const';
+import { Expense } from '@data/dtos/expense';
 
 // TODO: add color to categories table
 // Allow user to config this

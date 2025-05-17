@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
-import { Expense, ExpenseDBRow } from '../dtos/expense';
-import { Adapter } from './base';
+
+import { Expense, ExpenseDBRow } from '@data/dtos/expense';
+import { Adapter } from '@data/adapters/base';
 
 export class ExpenseAdapter implements Adapter<ExpenseDBRow, Expense> {
     adapt(data: ExpenseDBRow): Expense {

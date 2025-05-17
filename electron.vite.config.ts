@@ -2,6 +2,11 @@ import { resolve } from 'path';
 
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite';
 
+const pathAlias = {
+    '@components/': `${resolve(__dirname, 'src', 'components')}/`,
+    '@data/': `${resolve(__dirname, 'electron', 'main', 'database')}/`,
+};
+
 export default defineConfig({
     main: {
         plugins: [externalizeDepsPlugin()],
@@ -13,6 +18,9 @@ export default defineConfig({
                     index: resolve(__dirname, 'electron/main/main.ts'),
                 },
             },
+        },
+        resolve: {
+            alias: pathAlias,
         },
     },
     preload: {
@@ -37,6 +45,9 @@ export default defineConfig({
                     index: resolve(__dirname, 'index.html'),
                 },
             },
+        },
+        resolve: {
+            alias: pathAlias,
         },
     },
 });

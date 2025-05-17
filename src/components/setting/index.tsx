@@ -1,4 +1,5 @@
 import { Col, Row, Switch, Typography } from 'antd';
+
 const { Title } = Typography;
 type SettingComponentProps = {};
 

@@ -1,4 +1,4 @@
-import { DatabaseRepository } from '../repository/database';
+import { DatabaseRepository } from '@data/repository/database';
 
 export interface Migration {
     upgrade(databaseRepository: DatabaseRepository): void;

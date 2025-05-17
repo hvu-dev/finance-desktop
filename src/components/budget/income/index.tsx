@@ -8,14 +8,13 @@ import {
     Input,
     InputNumber,
     Modal,
-    Radio,
-    RadioChangeEvent,
     Row,
     Select,
 } from 'antd';
-import IncomeTableComponent from './income-table';
 import { PlusOutlined } from '@ant-design/icons';
-import { Income } from 'electron/main/database/dtos/income';
+
+import IncomeTableComponent from '@components/budget/income/income-table';
+import { Income } from '@data/dtos/income';
 
 type IncomeComponentProps = {};
 
