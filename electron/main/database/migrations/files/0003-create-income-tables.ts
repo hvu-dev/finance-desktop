@@ -30,7 +30,7 @@ export class Migration0003 implements Migration {
      * receivedDate is intended for non-regular income.
      * period is intended for regular income.
      */
-    upgrade(databaseRepository: DatabaseRepository): void {
+    private createTables(databaseRepository: DatabaseRepository) {
         databaseRepository.execute(
             `CREATE TABLE IF NOT EXISTS incomePeriods (
             id INTEGER PRIMARY KEY,
@@ -57,7 +57,10 @@ export class Migration0003 implements Migration {
             incomeCategoryId INTEGER NOT NULL,
             FOREIGN KEY (incomeCategoryId) REFERENCES incomeCategories (id) ON DELETE CASCADE ON UPDATE NO ACTION);`
         );
+    }
 
+    upgrade(databaseRepository: DatabaseRepository): void {
+        this.createTables(databaseRepository);
         this.createIncomePeriods(databaseRepository);
         this.createIncomeCategories(databaseRepository);
     }
