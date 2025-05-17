@@ -9,24 +9,16 @@ export class IncomeService {
     ) {}
 
     public getAll(): Income[] {
-        // const data: IncomeDBRow[] = this.databaseRepository
-        //     .prepare(
-        //         `SELECT i.id, i.source, i.receivedDate, i.amount, i.note, t.id as typeId, t.name as typeName, t.value as typeValue
-        //         FROM incomes as i
-        //         INNER JOIN incomeTypes as t ON i.typeId = t.id;`
-        //     )
-        //     .all();
-        const d: IncomeDBRow[] = [
-            {
-                id: 1,
-                receivedDate: '2023-05-06T00:00:00.000Z',
-                amount: 200000,
-                note: '',
-                typeId: 1,
-                typeName: 'salary',
-                typeValue: 'salary',
-            },
-        ];
-        return this.adapter.adaptMultiple(d);
+        const data: IncomeDBRow[] = this.databaseRepository
+            .prepare(
+                `SELECT i.id, i.receivedDate, i.amount, i.note,
+                c.id as incomeCategoryId, c.name as incomeCategoryName, c.value as incomeCategoryValue,
+                p.id as incomePeriodId, p.name as incomePeriodName, p.value as incomePeriodValue
+                FROM incomes as i
+                INNER JOIN incomeCategories as c ON i.incomeCategoryId = c.id
+                INNER JOIN incomePeriods as p ON c.incomePeriodId = p.id;`
+            )
+            .all();
+        return this.adapter.adaptMultiple(data);
     }
 }

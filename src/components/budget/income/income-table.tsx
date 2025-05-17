@@ -14,7 +14,7 @@ import {
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
 import { DATE_FORMAT } from '../../const';
-import { Income } from '@database/dtos/income';
+import { Income } from 'electron/main/database/dtos/income';
 
 type IncomeTableComponentProps = {
     data: Income[];
@@ -25,11 +25,11 @@ const IncomeTableComponent: React.FC<IncomeTableComponentProps> = ({
 }) => {
     const columns: TableProps<Income>['columns'] = [
         {
-            title: 'Type',
-            dataIndex: 'type',
-            key: 'type',
-            render: (_, { type }) => {
-                return type.name;
+            title: 'Category',
+            dataIndex: 'category',
+            key: 'id',
+            render: (_, { category }) => {
+                return category.name;
             },
         },
         {
@@ -45,7 +45,18 @@ const IncomeTableComponent: React.FC<IncomeTableComponentProps> = ({
             dataIndex: 'receivedDate',
             key: 'id',
             render: (value: Date) => {
+                if (!value) {
+                    return '--';
+                }
                 return dayjs(value).format(DATE_FORMAT);
+            },
+        },
+        {
+            title: 'Period',
+            dataIndex: 'category',
+            key: 'id',
+            render: (_, { category }) => {
+                return category.period.name;
             },
         },
         {
