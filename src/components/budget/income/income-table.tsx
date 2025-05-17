@@ -13,8 +13,8 @@ import {
 } from 'antd';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
-import { DATE_FORMAT } from '../../const';
-import { Income } from 'electron/main/database/dtos/income';
+import { DATE_FORMAT } from '@components/const';
+import { Income } from '@data/dtos/income';
 
 type IncomeTableComponentProps = {
     data: Income[];

@@ -1,5 +1,5 @@
-import { CategorySum, DayExpenseSum } from '../dtos/statistic';
-import { DatabaseRepository } from '../repository/database';
+import { CategorySum, DayExpenseSum } from '@data/dtos/statistic';
+import { DatabaseRepository } from '@data/repository/database';
 
 export class StatisticService {
     constructor(private databaseRepository: DatabaseRepository) {}

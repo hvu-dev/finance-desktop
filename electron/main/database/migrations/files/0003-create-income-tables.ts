@@ -1,6 +1,9 @@
-import { DatabaseRepository } from '../../repository/database';
-import { DEFAULT_INCOME_CATEGORIES, DEFAULT_INCOME_PERIODS } from '../const';
-import { Migration } from '../migrator';
+import { DatabaseRepository } from '@data/repository/database';
+import {
+    DEFAULT_INCOME_CATEGORIES,
+    DEFAULT_INCOME_PERIODS,
+} from '@data/migrations/const';
+import { Migration } from '@data/migrations/migrator';
 
 export class Migration0003 implements Migration {
     private createIncomeCategories(databaseRepository: DatabaseRepository) {

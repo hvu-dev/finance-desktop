@@ -1,6 +1,6 @@
-import { DatabaseRepository } from '../../repository/database';
-import { DEFAULT_CATEGORIES } from '../const';
-import { Migration } from '../migrator';
+import { DatabaseRepository } from '@data/repository/database';
+import { DEFAULT_CATEGORIES } from '@data/migrations/const';
+import { Migration } from '@data/migrations/migrator';
 
 export class Migration0002 implements Migration {
     public createCategories(databaseRepository: DatabaseRepository): void {

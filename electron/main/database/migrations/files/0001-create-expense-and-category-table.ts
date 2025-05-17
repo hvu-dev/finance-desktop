@@ -1,5 +1,5 @@
-import { DatabaseRepository } from '../../repository/database';
-import { Migration } from '../migrator';
+import { DatabaseRepository } from '@data/repository/database';
+import { Migration } from '@data/migrations/migrator';
 
 export class Migration0001 implements Migration {
     upgrade(databaseRepository: DatabaseRepository): void {

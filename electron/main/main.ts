@@ -2,12 +2,13 @@ import path from 'node:path';
 
 import { app, BrowserWindow, ipcMain } from 'electron';
 import started from 'electron-squirrel-startup';
-import ServiceFactory from './database/services/service-factory';
 
-import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
+
+import ServiceFactory from '@data/services/service-factory';
 
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);

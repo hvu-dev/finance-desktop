@@ -1,12 +1,12 @@
-import { Adapter } from '../adapters/base';
+import { Adapter } from '@data/adapters/base';
 import {
     CreateExpenseDto,
     Expense,
     ExpenseDBRow,
     ExpenseGetFilterParams,
     UpdateExpenseDto,
-} from '../dtos/expense';
-import { DatabaseRepository } from '../repository/database';
+} from '@data/dtos/expense';
+import { DatabaseRepository } from '@data/repository/database';
 
 export class ExpenseService {
     constructor(

@@ -1,6 +1,6 @@
-import { Adapter } from '../adapters/base';
-import { DatabaseRepository } from '../repository/database';
-import { Income, IncomeDBRow } from '../dtos/income';
+import { Adapter } from '@data/adapters/base';
+import { DatabaseRepository } from '@data/repository/database';
+import { Income, IncomeDBRow } from '@data/dtos/income';
 
 export class IncomeService {
     constructor(

@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import dayjs from 'dayjs';
+
 import {
     Button,
     Card,
@@ -14,15 +16,15 @@ import {
     Statistic,
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import ExpenseTable from './expense-table';
+
+import ExpenseTable from '@components/expense/expense-table';
 import {
     CreateExpenseDto,
     Expense,
     UpdateExpenseDto,
-} from '../../database/dtos/expense';
-import dayjs from 'dayjs';
-import { Category } from 'src/database/dtos/category';
-import { CategorySum } from 'src/database/dtos/statistic';
+} from '@data/dtos/expense';
+import { Category } from '@data/dtos/category';
+import { CategorySum } from '@data/dtos/statistic';
 
 enum ExpenseModalMode {
     CREATE,
