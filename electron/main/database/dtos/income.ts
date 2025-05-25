@@ -1,16 +1,3 @@
-export type IncomePeriod = {
-    id: number;
-    name: string;
-    value: string;
-};
-
-export type IncomeCategory = {
-    id: number;
-    name: string;
-    value: string;
-    period: IncomePeriod;
-};
-
 export type IncomeDBRow = {
     id: number;
     receivedDate: string;
@@ -22,6 +9,28 @@ export type IncomeDBRow = {
     incomePeriodId: number;
     incomePeriodName: string;
     incomePeriodValue: string;
+};
+
+export type IncomeCategoryDBRow = {
+    id: number;
+    value: string;
+    name: string;
+    incomePeriodId: number;
+    incomePeriodName: string;
+    incomePeriodValue: string;
+};
+
+export type IncomePeriod = {
+    id: number;
+    name: string;
+    value: number;
+};
+
+export type IncomeCategory = {
+    id: number;
+    name: string;
+    value: string;
+    period: IncomePeriod;
 };
 
 export type Income = {

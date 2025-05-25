@@ -2,11 +2,12 @@ import path from 'path';
 
 import { CategoryAdapter } from '@data/adapters/category';
 import { ExpenseAdapter } from '@data/adapters/expense';
-import { IncomeAdapter } from '@data/adapters/income';
+import { IncomeAdapter, IncomeCategoryAdapter } from '@data/adapters/income';
 
 import { CategoryService } from '@data/services/category-service';
 import { DatabaseRepository } from '@data/repository/database';
 import { ExpenseService } from '@data/services/expense-service';
+import { IncomeCategoryService } from '@data/services/income-category-service';
 import { IncomeService } from '@data/services/income-service';
 import { StatisticService } from '@data/services/statistic-service';
 
@@ -56,6 +57,13 @@ class ServiceFactory {
 
     public createIncomeService(): IncomeService {
         return new IncomeService(this.databaseRepository, new IncomeAdapter());
+    }
+
+    public createIncomeCategoryService(): IncomeCategoryService {
+        return new IncomeCategoryService(
+            this.databaseRepository,
+            new IncomeCategoryAdapter()
+        );
     }
 }
 
