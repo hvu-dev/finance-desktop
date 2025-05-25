@@ -36,3 +36,7 @@ contextBridge.exposeInMainWorld('statisticService', {
 contextBridge.exposeInMainWorld('incomeService', {
     getAllIncomes: () => ipcRenderer.invoke('getAllIncomes'),
 });
+
+contextBridge.exposeInMainWorld('incomeCategoryService', {
+    getAllIncomeCategories: () => ipcRenderer.invoke('getAllIncomeCategories'),
+});

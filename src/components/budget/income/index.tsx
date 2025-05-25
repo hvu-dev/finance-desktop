@@ -14,7 +14,7 @@ import {
 import { PlusOutlined } from '@ant-design/icons';
 
 import IncomeTableComponent from '@components/budget/income/income-table';
-import { Income } from '@data/dtos/income';
+import { Income, IncomeCategory } from '@data/dtos/income';
 
 type IncomeComponentProps = {};
 
@@ -28,30 +28,25 @@ const IncomeComponent: React.FC<IncomeComponentProps> = () => {
         useState<boolean>(false);
     const [isUpdateModalLoading, setIsUpdateModalLoading] =
         useState<boolean>(false);
-    const [isCustomPeriodDisabled, setIsCustomPeriodDisabled] =
-        useState<boolean>(true);
 
     const [incomes, setIncomes] = useState<Income[]>([]);
     const [displayIncomes, setDisplayIncomes] = useState<Income[]>([]);
+    const [incomeCategories, setIncomeCategories] = useState<IncomeCategory[]>(
+        []
+    );
 
     useEffect(() => {
         Promise.all([
             // @ts-ignore
             window.incomeService.getAllIncomes(),
+            // @ts-ignore
+            window.incomeCategoryService.getAllIncomeCategories(),
         ]).then((data) => {
             setIncomes(data[0]);
             setDisplayIncomes(data[0]);
+            setIncomeCategories(data[1]);
         });
     }, []);
-
-    const onPeriodSelectionChange = (value, option) => {
-        const selectedPeriod = value;
-        if (selectedPeriod === 'other') {
-            setIsCustomPeriodDisabled(false);
-        } else {
-            setIsCustomPeriodDisabled(true);
-        }
-    };
 
     const handleBudgetOkButtonClick = (selectedIncome) => {};
 
@@ -105,6 +100,23 @@ const IncomeComponent: React.FC<IncomeComponentProps> = () => {
                         }}
                         disabled={updateFormDisabled}>
                         <Form.Item
+                            label='Type'
+                            name='type'
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Type is required',
+                                },
+                            ]}>
+                            <Select
+                                options={incomeCategories}
+                                key={'id'}
+                                optionRender={(option) => {
+                                    return `${option.data.name} - ${option.data.period.name}`;
+                                }}
+                            />
+                        </Form.Item>
+                        <Form.Item
                             label='Amount'
                             name='amount'
                             rules={[
@@ -116,17 +128,6 @@ const IncomeComponent: React.FC<IncomeComponentProps> = () => {
                             <InputNumber style={{ width: '100%' }} />
                         </Form.Item>
                         <Form.Item
-                            label='Type'
-                            name='type'
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'Type is required',
-                                },
-                            ]}>
-                            <Select options={[]} key={'id'} />
-                        </Form.Item>
-                        <Form.Item
                             label='Received Date'
                             name='receivedDate'
                             rules={[
@@ -136,37 +137,6 @@ const IncomeComponent: React.FC<IncomeComponentProps> = () => {
                                 },
                             ]}>
                             <DatePicker />
-                        </Form.Item>
-                        <Form.Item label='Period' name='period'>
-                            <Select
-                                onSelect={onPeriodSelectionChange}
-                                options={[
-                                    {
-                                        id: '1',
-                                        value: '0',
-                                        label: 'Not regular',
-                                    },
-                                    { id: '2', value: '7', label: 'Weekly' },
-                                    { id: '3', value: '30', label: 'Monthly' },
-                                    { id: '4', value: '365', label: 'Yearly' },
-                                    {
-                                        id: '5',
-                                        value: 'other',
-                                        label: 'Custom',
-                                    },
-                                ]}
-                                key={'id'}
-                            />
-                        </Form.Item>
-                        <Form.Item
-                            label='Custom period'
-                            name='customPeriod'
-                            hidden={isCustomPeriodDisabled}>
-                            <InputNumber
-                                style={{ width: '100%' }}
-                                disabled={isCustomPeriodDisabled}
-                                placeholder='Frequency in days'
-                            />
                         </Form.Item>
                         <Form.Item label='Note' name='note'>
                             <Input.TextArea placeholder='Note something important regarding to this income' />

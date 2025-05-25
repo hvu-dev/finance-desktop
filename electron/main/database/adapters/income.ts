@@ -1,5 +1,10 @@
 import dayjs from 'dayjs';
-import { Income, IncomeDBRow } from '@data/dtos/income';
+import {
+    Income,
+    IncomeCategory,
+    IncomeCategoryDBRow,
+    IncomeDBRow,
+} from '@data/dtos/income';
 import { Adapter } from '@data/adapters/base';
 
 export class IncomeAdapter implements Adapter<IncomeDBRow, Income> {
@@ -17,7 +22,7 @@ export class IncomeAdapter implements Adapter<IncomeDBRow, Income> {
                 period: {
                     id: data.incomePeriodId,
                     name: data.incomePeriodName,
-                    value: data.incomePeriodValue,
+                    value: Number.parseInt(data.incomePeriodValue),
                 },
             },
         };
@@ -27,6 +32,31 @@ export class IncomeAdapter implements Adapter<IncomeDBRow, Income> {
         let adaptedData: Income[] = [];
         for (const income of data) {
             adaptedData.push(this.adapt(income));
+        }
+        return adaptedData;
+    }
+}
+
+export class IncomeCategoryAdapter
+    implements Adapter<IncomeCategoryDBRow, IncomeCategory>
+{
+    adapt(data: IncomeCategoryDBRow): IncomeCategory {
+        return {
+            id: data.id,
+            name: data.name,
+            value: data.value,
+            period: {
+                id: data.incomePeriodId,
+                name: data.incomePeriodName,
+                value: Number.parseInt(data.incomePeriodValue),
+            },
+        };
+    }
+
+    adaptMultiple(data: IncomeCategoryDBRow[]): IncomeCategory[] {
+        let adaptedData: IncomeCategory[] = [];
+        for (const row of data) {
+            adaptedData.push(this.adapt(row));
         }
         return adaptedData;
     }
